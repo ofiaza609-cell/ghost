@@ -248,7 +248,17 @@
     <div id="stockModal" class="modal hidden">
         <div class="modal-content">
             <h3>📦 Manage Stock</h3>
-            <select id="stockItemSelect"></select>
+            <select id="stockEnvelopeSelect" onchange="filterStockItems()" style="background:#ff6b35;color:white;font-weight:bold;">
+                <option value="">-- Select Envelope --</option>
+                <option value="65">📦 ENVELOPE 65's</option>
+                <option value="30">📦 ENVELOPE 30's</option>
+                <option value="big">📦 BIG SIOMAI</option>
+                <option value="siopao">📦 SIOPAO</option>
+                <option value="sauce">📦 SAUCE & EXTRAS</option>
+            </select>
+            <select id="stockItemSelect">
+                <option value="">Select Envelope First</option>
+            </select>
             <input type="number" id="stockQty" placeholder="Quantity to Add">
             <button class="btn btn-stock" onclick="addStock()">ADD STOCK</button>
             <button class="btn btn-view" onclick="document.getElementById('stockModal').classList.add('hidden')">CLOSE</button>
@@ -315,6 +325,31 @@
             } else {
                 currentOpenEnvelope = null;
             }
+        }
+
+        function filterStockItems() {
+            const envelope = document.getElementById('stockEnvelopeSelect').value;
+            const select = document.getElementById('stockItemSelect');
+            select.innerHTML = '<option value="">Select Item</option>';
+            
+            if (!envelope) return;
+            
+            let filteredItems = [];
+            if (envelope === '65') {
+                filteredItems = allItems.filter(item => item.includes('65'));
+            } else if (envelope === '30') {
+                filteredItems = allItems.filter(item => item.includes('30'));
+            } else if (envelope === 'big') {
+                filteredItems = allItems.filter(item => item.includes('BIG'));
+            } else if (envelope === 'siopao') {
+                filteredItems = allItems.filter(item => item.includes('Asado') || item.includes('Bola-Bola'));
+            } else if (envelope === 'sauce') {
+                filteredItems = allItems.filter(item => item === 'Chili Garlic' || item === 'Siopao Sauce');
+            }
+            
+            filteredItems.forEach(item => {
+                select.innerHTML += `<option value="${item}">${item} - Current: ${stockData[item]}</option>`;
+            });
         }
 
         function updateStockDisplay() {
@@ -439,106 +474,3 @@
             alert(`Sale Complete! Change: ₱${(cash - total).toFixed(2)}`);
 
             cart = [];
-            document.getElementById('customerName').value = '';
-            document.getElementById('cashAmount').value = '';
-            updateCart();
-            updateSummary();
-            updateStockDisplay();
-        }
-
-        function populateStockSelect() {
-            const select = document.getElementById('stockItemSelect');
-            select.innerHTML = '<option value="">Select Item</option>';
-            allItems.forEach(item => {
-                select.innerHTML += `<option value="${item}">${item} - Current: ${stockData[item]}</option>`;
-            });
-
-            const listDiv = document.getElementById('stockList');
-            listDiv.innerHTML = '';
-            allItems.forEach(item => {
-                const stock = stockData[item];
-                const color = stock === 0? 'red' : stock < 10? 'orange' : 'green';
-                listDiv.innerHTML += `<div style="padding:5px 0;border-bottom:1px solid #eee;"><b>${item}:</b> <span style="color:${color};font-weight:bold;">${stock} pcs</span></div>`;
-            });
-        }
-
-        function addStock() {
-            const item = document.getElementById('stockItemSelect').value;
-            const qty = parseInt(document.getElementById('stockQty').value);
-
-            if (!item ||!qty || qty <= 0) {
-                alert('Select item and enter valid quantity');
-                return;
-            }
-
-            stockData[item] += qty;
-            localStorage.setItem('stockData', JSON.stringify(stockData));
-            updateStockDisplay();
-            document.getElementById('stockQty').value = '';
-            alert(`Added ${qty} pcs to ${item}. New stock: ${stockData[item]}`);
-        }
-
-        function updateSummary() {
-            let totalSales = salesData.reduce((sum, sale) => sum + sale.total, 0);
-            let totalExpenses = expensesData.reduce((sum, exp) => sum + exp.amount, 0);
-            let netIncome = totalSales - totalExpenses;
-            let itemsSold = salesData.reduce((sum, sale) => sum + sale.items.reduce((s, i) => s + i.qty, 0), 0);
-
-            document.getElementById('totalSales').textContent = '₱' + totalSales.toFixed(2);
-            document.getElementById('totalExpenses').textContent = '₱' + totalExpenses.toFixed(2);
-            document.getElementById('netIncome').textContent = '₱' + netIncome.toFixed(2);
-            document.getElementById('itemsSold').textContent = itemsSold;
-        }
-
-        function closeExpenseModal() {
-            document.getElementById('expenseModal').classList.add('hidden');
-            document.getElementById('expenseName').value = '';
-            document.getElementById('expenseAmount').value = '';
-        }
-
-        function saveExpense() {
-            const name = document.getElementById('expenseName').value;
-            const amount = parseFloat(document.getElementById('expenseAmount').value);
-            const category = document.getElementById('expenseCategory').value;
-
-            if (!name ||!amount || amount <= 0) {
-                alert('Please enter valid expense name and amount');
-                return;
-            }
-
-            expensesData.push({
-                id: Date.now(),
-                name: name,
-                amount: amount,
-                category: category,
-                date: new Date().toISOString()
-            });
-
-            localStorage.setItem('expensesData', JSON.stringify(expensesData));
-            updateSummary();
-            closeExpenseModal();
-            alert('Expense Added ✅');
-        }
-
-        function viewExpenses() {
-            const listDiv = document.getElementById('expenseList');
-            listDiv.innerHTML = '';
-            if (expensesData.length === 0) {
-                listDiv.innerHTML = '<p>No expenses today</p>';
-            } else {
-                let total = 0;
-                expensesData.forEach(exp => {
-                    total += exp.amount;
-                    listDiv.innerHTML += `<div style="border-bottom:1px solid #eee;padding:10px 0;"><b>${exp.name}</b> - ₱${exp.amount.toFixed(2)}<br><small>${exp.category}</small></div>`;
-                });
-                listDiv.innerHTML += `<hr><b>Total: ₱${total.toFixed(2)}</b>`;
-            }
-            document.getElementById('expenseListModal').classList.remove('hidden');
-        }
-
-        updateSummary();
-        updateCart();
-        updateStockDisplay();
-    </script>
-</body>
-</html>
