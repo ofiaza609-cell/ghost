@@ -8,67 +8,165 @@
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: Arial, sans-serif; background: #f5f5f5; }
         .header { background: #ff6b35; color: white; padding: 15px; text-align: center; position: relative; }
-        .admin-btn { position: absolute; right: 15px; top: 15px; background: white; color: #ff6b35; border: none; padding: 8px 12px; border-radius: 5px; font-weight: bold; }
         .container { padding: 15px; max-width: 500px; margin: 0 auto; }
         .card { background: white; border-radius: 10px; padding: 15px; margin-bottom: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
         .btn { padding: 12px; border: none; border-radius: 5px; font-weight: bold; font-size: 16px; width: 100%; margin: 5px 0; }
         .btn-checkout { background: #28a745; color: white; }
-        .btn-print { background: #007bff; color: white; }
         .btn-expense { background: #dc3545; color: white; }
         .btn-view { background: #6c757d; color: white; }
-        .btn-add { background: #ff6b35; color: white; }
         .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: flex; justify-content: center; align-items: center; z-index: 9999; }
         .modal-content { background: white; padding: 20px; border-radius: 10px; width: 90%; max-width: 400px; max-height: 80vh; overflow-y: auto; }
         .hidden { display: none !important; }
         input, select { width: 100%; padding: 10px; margin: 8px 0; border: 1px solid #ddd; border-radius: 5px; }
         .item-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #eee; }
         .qty-btn { background: #ff6b35; color: white; border: none; width: 35px; height: 35px; border-radius: 5px; font-weight: bold; font-size: 18px; }
-        .category-title { background: #ff6b35; color: white; padding: 8px; margin: 10px 0 5px 0; border-radius: 5px; font-weight: bold; text-align: center; }
+        
+        /* ENVELOPE ACCORDION STYLE */
+        .envelope-btn { 
+            background: #ff6b35; 
+            color: white; 
+            padding: 15px; 
+            margin: 8px 0; 
+            border: none; 
+            border-radius: 8px; 
+            font-weight: bold; 
+            font-size: 18px; 
+            width: 100%;
+            text-align: left;
+            position: relative;
+        }
+        .envelope-btn:after {
+            content: '▼';
+            position: absolute;
+            right: 15px;
+        }
+        .envelope-btn.active:after {
+            content: '▲';
+        }
+        .envelope-content {
+            background: #fff5f2;
+            border-radius: 0 0 8px 8px;
+            padding: 10px;
+            margin-top: -8px;
+            margin-bottom: 8px;
+            border: 2px solid #ff6b35;
+            border-top: none;
+        }
     </style>
 </head>
 <body>
     <div class="header">
         <h2>DHAN SIOMAI POS</h2>
-        <button class="admin-btn">⚙️ ADMIN OFF</button>
     </div>
 
     <div class="container">
         <!-- MENU BY ENVELOPE -->
         <div class="card">
-            <h3>🍱 Menu</h3>
+            <h3>🍱 Menu - Envelope System</h3>
             
-            <div class="category-title">ENVELOPE 65</div>
-            <div class="item-row">
-                <span><b>BIG SIOMAI</b> - ₱65</span>
-                <button class="qty-btn" onclick="addToCart('BIG SIOMAI', 65)">+</button>
-            </div>
-            <div class="item-row">
-                <span><b>Siopao</b> - ₱65</span>
-                <button class="qty-btn" onclick="addToCart('Siopao', 65)">+</button>
+            <!-- ENVELOPE 65's -->
+            <button class="envelope-btn" onclick="toggleEnvelope('env65')">📦 ENVELOPE 65's</button>
+            <div id="env65" class="envelope-content hidden">
+                <div class="item-row">
+                    <span><b>Pork Siomai</b> - ₱65</span>
+                    <button class="qty-btn" onclick="addToCart('Pork Siomai 65', 65)">+</button>
+                </div>
+                <div class="item-row">
+                    <span><b>Chicken Siomai</b> - ₱65</span>
+                    <button class="qty-btn" onclick="addToCart('Chicken Siomai 65', 65)">+</button>
+                </div>
+                <div class="item-row">
+                    <span><b>Beef Siomai</b> - ₱65</span>
+                    <button class="qty-btn" onclick="addToCart('Beef Siomai 65', 65)">+</button>
+                </div>
+                <div class="item-row">
+                    <span><b>Shrimp Siomai</b> - ₱65</span>
+                    <button class="qty-btn" onclick="addToCart('Shrimp Siomai 65', 65)">+</button>
+                </div>
             </div>
 
-            <div class="category-title">ENVELOPE 30</div>
-            <div class="item-row">
-                <span><b>Dumplings (5pcs)</b> - ₱30</span>
-                <button class="qty-btn" onclick="addToCart('Dumplings', 30)">+</button>
-            </div>
-            <div class="item-row">
-                <span><b>Siomai (3pcs)</b> - ₱30</span>
-                <button class="qty-btn" onclick="addToCart('Siomai 3pcs', 30)">+</button>
+            <!-- ENVELOPE 30's -->
+            <button class="envelope-btn" onclick="toggleEnvelope('env30')">📦 ENVELOPE 30's</button>
+            <div id="env30" class="envelope-content hidden">
+                <div class="item-row">
+                    <span><b>Pork Siomai</b> - ₱30</span>
+                    <button class="qty-btn" onclick="addToCart('Pork Siomai 30', 30)">+</button>
+                </div>
+                <div class="item-row">
+                    <span><b>Chicken Siomai</b> - ₱30</span>
+                    <button class="qty-btn" onclick="addToCart('Chicken Siomai 30', 30)">+</button>
+                </div>
+                <div class="item-row">
+                    <span><b>Beef Siomai</b> - ₱30</span>
+                    <button class="qty-btn" onclick="addToCart('Beef Siomai 30', 30)">+</button>
+                </div>
+                <div class="item-row">
+                    <span><b>Shrimp Siomai</b> - ₱30</span>
+                    <button class="qty-btn" onclick="addToCart('Shrimp Siomai 30', 30)">+</button>
+                </div>
+                <div class="item-row">
+                    <span><b>Japanese Siomai</b> - ₱30</span>
+                    <button class="qty-btn" onclick="addToCart('Japanese Siomai 30', 30)">+</button>
+                </div>
             </div>
 
-            <div class="category-title">SAUCE & EXTRAS</div>
-            <div class="item-row">
-                <span><b>Chili Garlic Sauce</b> - ₱10</span>
-                <button class="qty-btn" onclick="addToCart('Chili Garlic Sauce', 10)">+</button>
+            <!-- BIG SIOMAI -->
+            <button class="envelope-btn" onclick="toggleEnvelope('envBig')">📦 BIG SIOMAI</button>
+            <div id="envBig" class="envelope-content hidden">
+                <div class="item-row">
+                    <span><b>BIG Pork Siomai</b> - ₱85</span>
+                    <button class="qty-btn" onclick="addToCart('BIG Pork Siomai', 85)">+</button>
+                </div>
+                <div class="item-row">
+                    <span><b>BIG Chicken Siomai</b> - ₱85</span>
+                    <button class="qty-btn" onclick="addToCart('BIG Chicken Siomai', 85)">+</button>
+                </div>
+                <div class="item-row">
+                    <span><b>BIG Beef Siomai</b> - ₱85</span>
+                    <button class="qty-btn" onclick="addToCart('BIG Beef Siomai', 85)">+</button>
+                </div>
+                <div class="item-row">
+                    <span><b>BIG Japanese Siomai</b> - ₱85</span>
+                    <button class="qty-btn" onclick="addToCart('BIG Japanese Siomai', 85)">+</button>
+                </div>
             </div>
-            <div class="item-row">
-                <span><b>Toyomansi</b> - ₱5</span>
-                <button class="qty-btn" onclick="addToCart('Toyomansi', 5)">+</button>
+
+            <!-- SIOPAO -->
+            <button class="envelope-btn" onclick="toggleEnvelope('envSiopao')">📦 SIOPAO</button>
+            <div id="envSiopao" class="envelope-content hidden">
+                <div class="item-row">
+                    <span><b>JUMBO Asado</b> - ₱35</span>
+                    <button class="qty-btn" onclick="addToCart('JUMBO Asado', 35)">+</button>
+                </div>
+                <div class="item-row">
+                    <span><b>MINI Asado</b> - ₱20</span>
+                    <button class="qty-btn" onclick="addToCart('MINI Asado', 20)">+</button>
+                </div>
+                <div class="item-row">
+                    <span><b>JUMBO Bola-Bola</b> - ₱35</span>
+                    <button class="qty-btn" onclick="addToCart('JUMBO Bola-Bola', 35)">+</button>
+                </div>
+                <div class="item-row">
+                    <span><b>MINI Bola-Bola</b> - ₱20</span>
+                    <button class="qty-btn" onclick="addToCart('MINI Bola-Bola', 20)">+</button>
+                </div>
             </div>
-            <div class="item-row">
-                <span><b>Extra Rice</b> - ₱15</span>
-                <button class="qty-btn" onclick="addToCart('Extra Rice', 15)">+</button>
+
+            <!-- SAUCE -->
+            <button class="envelope-btn" onclick="toggleEnvelope('envSauce')">📦 SAUCE & EXTRAS</button>
+            <div id="envSauce" class="envelope-content hidden">
+                <div class="item-row">
+                    <span><b>Chili Garlic</b> - ₱10</span>
+                    <button class="qty-btn" onclick="addToCart('Chili Garlic', 10)">+</button>
+                </div>
+                <div class="item-row">
+                    <span><b>Siopao Sauce</b> - ₱5</span>
+                    <button class="qty-btn" onclick="addToCart('Siopao Sauce', 5)">+</button>
+                </div>
+                <div class="item-row">
+                    <span><b>Extra Rice</b> - ₱15</span>
+                    <button class="qty-btn" onclick="addToCart('Extra Rice', 15)">+</button>
+                </div>
             </div>
         </div>
 
@@ -81,7 +179,6 @@
             <input type="text" id="customerName" placeholder="Customer Name">
             <input type="number" id="cashAmount" placeholder="Cash Amount">
             <button class="btn btn-checkout" onclick="checkout()">💰 CHECKOUT</button>
-            <button class="btn btn-print" onclick="printLastReceipt()">🖨️ PRINT LAST RECEIPT</button>
         </div>
 
         <!-- SUMMARY -->
@@ -103,7 +200,7 @@
     <div id="expenseModal" class="modal hidden">
         <div class="modal-content">
             <h3>💸 Add Expense</h3>
-            <input type="text" id="expenseName" placeholder="Expense Name - e.g. Pork, Gas">
+            <input type="text" id="expenseName" placeholder="Expense Name">
             <input type="number" id="expenseAmount" placeholder="Amount">
             <select id="expenseCategory">
                 <option value="Ingredients">Ingredients</option>
@@ -138,7 +235,28 @@
         let cart = [];
         let salesData = JSON.parse(localStorage.getItem('salesData')) || [];
         let expensesData = JSON.parse(localStorage.getItem('expensesData')) || [];
-        let lastReceipt = null;
+        let currentOpenEnvelope = null;
+        
+        // ENVELOPE TOGGLE - ISA LANG BUKAS AT A TIME
+        function toggleEnvelope(envId) {
+            const allEnvelopes = document.querySelectorAll('.envelope-content');
+            const allBtns = document.querySelectorAll('.envelope-btn');
+            const clickedEnv = document.getElementById(envId);
+            const clickedBtn = event.target;
+            
+            // Close all first
+            allEnvelopes.forEach(env => env.classList.add('hidden'));
+            allBtns.forEach(btn => btn.classList.remove('active'));
+            
+            // If clicking same one, close it. If different, open it
+            if (currentOpenEnvelope !== envId) {
+                clickedEnv.classList.remove('hidden');
+                clickedBtn.classList.add('active');
+                currentOpenEnvelope = envId;
+            } else {
+                currentOpenEnvelope = null;
+            }
+        }
         
         function addToCart(name, price) {
             const existing = cart.find(item => item.name === name);
@@ -197,7 +315,7 @@
                 return;
             }
             
-            const sale = {
+            salesData.push({
                 id: Date.now(),
                 customer: customer,
                 items: [...cart],
@@ -205,10 +323,8 @@
                 cash: cash,
                 change: cash - total,
                 date: new Date().toISOString()
-            };
+            });
             
-            salesData.push(sale);
-            lastReceipt = sale;
             localStorage.setItem('salesData', JSON.stringify(salesData));
             alert(`Sale Complete! Change: ₱${(cash - total).toFixed(2)}`);
             
@@ -217,14 +333,6 @@
             document.getElementById('cashAmount').value = '';
             updateCart();
             updateSummary();
-        }
-        
-        function printLastReceipt() {
-            if (!lastReceipt) {
-                alert('No receipt to print');
-                return;
-            }
-            alert('Printing receipt for: ' + lastReceipt.customer + ' - ₱' + lastReceipt.total.toFixed(2));
         }
         
         function updateSummary() {
