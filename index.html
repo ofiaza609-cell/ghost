@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dhan Siomai POS System</title>
+    <title>DHAN SIOMAI POS SYSTEM</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: Arial, sans-serif; background: #f5f5f5; }
       .header { background: #ff6b35; color: white; padding: 15px; text-align: center; }
-      .nav-tabs { display: flex; background: white; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-      .nav-tab { flex: 1; padding: 15px; text-align: center; border: none; background: white; font-weight: bold; cursor: pointer; border-bottom: 3px solid transparent; }
-      .nav-tab.active { border-bottom: 3px solid #ff6b35; color: #ff6b35; }
+      .tabs { display: flex; background: white; border-bottom: 2px solid #ff6b35; }
+      .tab-btn { flex: 1; padding: 12px; border: none; background: white; font-weight: bold; font-size: 14px; cursor: pointer; }
+      .tab-btn.active { color: #ff6b35; border-bottom: 3px solid #ff6b35; }
       .container { padding: 15px; max-width: 500px; margin: 0 auto; }
       .card { background: white; border-radius: 10px; padding: 15px; margin-bottom: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
       .btn { padding: 12px; border: none; border-radius: 5px; font-weight: bold; font-size: 16px; width: 100%; margin: 5px 0; cursor: pointer; }
@@ -18,7 +18,6 @@
       .btn-expense { background: #dc3545; color: white; }
       .btn-view { background: #6c757d; color: white; }
       .btn-stock { background: #17a2b8; color: white; }
-      .btn-reset { background: #ffc107; color: black; }
       .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: flex; justify-content: center; align-items: center; z-index: 9999; }
       .modal-content { background: white; padding: 20px; border-radius: 10px; width: 90%; max-width: 400px; max-height: 80vh; overflow-y: auto; }
       .hidden { display: none!important; }
@@ -32,7 +31,7 @@
 
       .envelope-btn {
             background: #ff6b35; color: white; padding: 15px; margin: 8px 0;
-            border: none; border-radius: 8px; font-weight: bold; font-size: 18px;
+            border: none; border-radius: 8px; font-weight: bold; font-size: 16px;
             width: 100%; text-align: left; position: relative; cursor: pointer;
         }
       .envelope-btn:after { content: '▼'; position: absolute; right: 15px; }
@@ -59,22 +58,8 @@
             justify-content: space-between;
             min-height: 110px;
         }
-      .grid-item-name {
-            font-weight: bold;
-            font-size: 12px;
-            margin-bottom: 3px;
-        }
-      .grid-item-price {
-            color: #ff6b35;
-            font-weight: bold;
-            font-size: 15px;
-            margin-bottom: 5px;
-        }
-      
-      .stat-box { background: #f8f9fa; padding: 15px; border-radius: 8px; margin: 10px 0; text-align: center; }
-      .stat-value { font-size: 24px; font-weight: bold; color: #ff6b35; }
-      .stat-label { font-size: 12px; color: #666; margin-top: 5px; }
-      
+      .grid-item-name { font-weight: bold; font-size: 12px; margin-bottom: 3px; }
+      .grid-item-price { color: #ff6b35; font-weight: bold; font-size: 15px; margin-bottom: 5px; }
       .tab-content { display: none; }
       .tab-content.active { display: block; }
     </style>
@@ -84,19 +69,18 @@
         <h2>DHAN SIOMAI POS SYSTEM</h2>
     </div>
 
-    <!-- NAVIGATION TABS -->
-    <div class="nav-tabs">
-        <button class="nav-tab active" onclick="switchTab('pos')">📱 POS</button>
-        <button class="nav-tab" onclick="switchTab('inventory')">📦 INVENTORY</button>
-        <button class="nav-tab" onclick="switchTab('expenses')">💸 EXPENSES</button>
+    <div class="tabs">
+        <button class="tab-btn active" onclick="switchTab('pos')">📱 POS</button>
+        <button class="tab-btn" onclick="switchTab('inventory')">📦 INVENTORY</button>
+        <button class="tab-btn" onclick="switchTab('expenses')">💸 EXPENSES</button>
     </div>
 
     <div class="container">
         <!-- POS TAB -->
-        <div id="posTab" class="tab-content active">
+        <div id="pos-tab" class="tab-content active">
             <div class="card">
                 <h3>🍱 Menu Categories</h3>
-
+                
                 <button class="envelope-btn" onclick="toggleEnvelope('env65', this)">📁 65's</button>
                 <div id="env65" class="envelope-content hidden">
                     <div class="grid-menu">
@@ -197,16 +181,10 @@
                 <div id="envDumplings" class="envelope-content hidden">
                     <div class="grid-menu">
                         <div class="grid-item">
-                            <div class="grid-item-name">Gyoza</div>
-                            <div class="grid-item-price">₱75</div>
-                            <span class="stock-badge" id="stock-Gyoza">0</span>
-                            <button class="qty-btn" onclick="addToCart('Gyoza', 75)">+</button>
-                        </div>
-                        <div class="grid-item">
-                            <div class="grid-item-name">Sharkspin</div>
-                            <div class="grid-item-price">₱80</div>
-                            <span class="stock-badge" id="stock-Sharkspin">0</span>
-                            <button class="qty-btn" onclick="addToCart('Sharkspin', 80)">+</button>
+                            <div class="grid-item-name">Pork Dumpling</div>
+                            <div class="grid-item-price">₱40</div>
+                            <span class="stock-badge" id="stock-Pork Dumpling">0</span>
+                            <button class="qty-btn" onclick="addToCart('Pork Dumpling', 40)">+</button>
                         </div>
                     </div>
                 </div>
@@ -269,22 +247,329 @@
                 <input type="number" id="cashAmount" placeholder="Cash Amount">
                 <button class="btn btn-checkout" onclick="checkout()">💰 CHECKOUT</button>
             </div>
+
+            <div class="card">
+                <h3>📊 Today's Sales</h3>
+                <p>Total Sales: <span id="totalSales">₱0.00</span></p>
+                <p>Items Sold: <span id="itemsSold">0</span></p>
+                <button class="btn btn-view" onclick="viewSales()">📋 VIEW SALES HISTORY</button>
+            </div>
         </div>
 
         <!-- INVENTORY TAB -->
-        <div id="inventoryTab" class="tab-content">
+        <div id="inventory-tab" class="tab-content">
             <div class="card">
                 <h3>📦 Stock Management</h3>
-                <div class="stat-box">
-                    <div class="stat-value" id="totalStockCount">0</div>
-                    <div class="stat-label">TOTAL STOCK</div>
-                </div>
-                <button class="btn btn-stock" onclick="document.getElementById('stockModal').classList.remove('hidden')">➕ ADD STOCK</button>
-                <button class="btn btn-reset" onclick="resetStock()">🔄 RESET ALL STOCK</button>
+                <p>Total Stock: <b><span id="totalStockCount">0</span> pcs</b></p>
+                <select id="stockItemSelect"></select>
+                <input type="number" id="stockQty" placeholder="Quantity to Add">
+                <button class="btn btn-stock" onclick="addStock()">ADD STOCK</button>
+                <button class="btn btn-view" onclick="resetAllStock()">RESET ALL STOCK</button>
                 <hr style="margin:15px 0;">
-                <h4>Current Inventory:</h4>
-                <div id="inventoryList"></div>
+                <h4>Current Stock Levels:</h4>
+                <div id="stockList"></div>
+            </div>
+        </div>
+
+        <!-- EXPENSES TAB -->
+        <div id="expenses-tab" class="tab-content">
+            <div class="card">
+                <h3>💸 Expenses</h3>
+                <p>Total Expenses: <span id="totalExpenses">₱0.00</span></p>
+                <input type="text" id="expenseName" placeholder="Expense Name">
+                <input type="number" id="expenseAmount" placeholder="Amount">
+                <select id="expenseCategory">
+                    <option value="Ingredients">Ingredients</option>
+                    <option value="Operating">Operating</option>
+                    <option value="Envelope">Envelope/Packaging</option>
+                </select>
+                <button class="btn btn-expense" onclick="saveExpense()">SAVE EXPENSE</button>
+                <button class="btn btn-view" onclick="viewExpenses()">📋 VIEW ALL EXPENSES</button>
             </div>
 
             <div class="card">
-                <h3>📊 Today's Summary</h3>
+                <h3>📊 Net Income</h3>
+                <p>Total Sales: <span id="totalSales2">₱0.00</span></p>
+                <p>Total Expenses: <span id="totalExpenses2">₱0.00</span></p>
+                <hr style="margin:10px 0;">
+                <p><b>Net Income: <span id="netIncome">₱0.00</span></b></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODALS -->
+    <div id="expenseListModal" class="modal hidden">
+        <div class="modal-content">
+            <h3>📋 Today's Expenses</h3>
+            <div id="expenseList"></div>
+            <button class="btn btn-view" onclick="document.getElementById('expenseListModal').classList.add('hidden')">CLOSE</button>
+        </div>
+    </div>
+
+    <div id="salesListModal" class="modal hidden">
+        <div class="modal-content">
+            <h3>📋 Today's Sales</h3>
+            <div id="salesList"></div>
+            <button class="btn btn-view" onclick="document.getElementById('salesListModal').classList.add('hidden')">CLOSE</button>
+        </div>
+    </div>
+
+    <script>
+        let cart = [];
+        let salesData = JSON.parse(localStorage.getItem('salesData')) || [];
+        let expensesData = JSON.parse(localStorage.getItem('expensesData')) || [];
+        let stockData = JSON.parse(localStorage.getItem('stockData')) || {};
+        let currentOpenEnvelope = null;
+        let currentTab = 'pos';
+
+        const allItems = [
+            'Pork Siomai 65', 'Chicken Siomai 65', 'Beef Siomai 65', 'Shrimp Siomai 65',
+            'Pork Siomai 30', 'Chicken Siomai 30', 'Beef Siomai 30', 'Shrimp Siomai 30', 'Japanese Siomai 30',
+            'BIG Pork Siomai', 'BIG Chicken Siomai', 'BIG Beef Siomai', 'BIG Japanese Siomai',
+            'Pork Dumpling', 'JUMBO Asado', 'MINI Asado', 'JUMBO Bola-Bola', 'MINI Bola-Bola',
+            'Chili Garlic', 'Siopao Sauce'
+        ];
+
+        allItems.forEach(item => {
+            if (stockData[item] === undefined) stockData[item] = 0;
+        });
+
+        function switchTab(tab) {
+            currentTab = tab;
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            event.target.classList.add('active');
+            document.getElementById(tab + '-tab').classList.add('active');
+            updateSummary();
+            updateStockDisplay();
+        }
+
+        function toggleEnvelope(envId, btn) {
+            const allEnvelopes = document.querySelectorAll('.envelope-content');
+            const allBtns = document.querySelectorAll('.envelope-btn');
+            const clickedEnv = document.getElementById(envId);
+
+            allEnvelopes.forEach(env => env.classList.add('hidden'));
+            allBtns.forEach(b => b.classList.remove('active'));
+
+            if (currentOpenEnvelope!== envId) {
+                clickedEnv.classList.remove('hidden');
+                btn.classList.add('active');
+                currentOpenEnvelope = envId;
+            } else {
+                currentOpenEnvelope = null;
+            }
+        }
+
+        function updateStockDisplay() {
+            let totalStock = 0;
+            allItems.forEach(item => {
+                const stock = stockData[item] || 0;
+                totalStock += stock;
+                const badge = document.getElementById(`stock-${item}`);
+                const btn = document.querySelector(`button[onclick="addToCart('${item}', ${getPrice(item)})"]`);
+
+                if (badge) {
+                    badge.textContent = stock;
+                    badge.className = 'stock-badge';
+                    if (stock === 0) {
+                        badge.classList.add('out');
+                        if (btn) btn.disabled = true;
+                    } else if (stock < 10) {
+                        badge.classList.add('low');
+                        if (btn) btn.disabled = false;
+                    } else {
+                        if (btn) btn.disabled = false;
+                    }
+                }
+            });
+            document.getElementById('totalStockCount').textContent = totalStock;
+            populateStockSelect();
+        }
+
+        function getPrice(item) {
+            if (item.includes('65')) return 65;
+            if (item.includes('30')) return 30;
+            if (item.includes('BIG')) return 85;
+            if (item.includes('JUMBO')) return 35;
+            if (item.includes('MINI')) return 20;
+            if (item === 'Chili Garlic') return 10;
+            if (item === 'Siopao Sauce') return 5;
+            if (item === 'Pork Dumpling') return 40;
+            return 0;
+        }
+
+        function addToCart(name, price) {
+            if (stockData[name] <= 0) {
+                alert('Out of stock na si ' + name + '!');
+                return;
+            }
+
+            const existing = cart.find(item => item.name === name);
+            if (existing) {
+                if (existing.qty >= stockData[name]) {
+                    alert('Wala nang stock! Meron na lang ' + stockData[name] + ' pcs');
+                    return;
+                }
+                existing.qty++;
+            } else {
+                cart.push({name: name, price: price, qty: 1});
+            }
+            updateCart();
+        }
+
+        function updateCart() {
+            const cartDiv = document.getElementById('cartItems');
+            const totalSpan = document.getElementById('cartTotal');
+            let total = 0;
+
+            if (cart.length === 0) {
+                cartDiv.innerHTML = '<p style="color:#999;">Cart is empty</p>';
+                totalSpan.textContent = '0.00';
+                return;
+            }
+
+            cartDiv.innerHTML = '';
+            cart.forEach((item, i) => {
+                total += item.price * item.qty;
+                cartDiv.innerHTML += `
+                    <div class="item-row">
+                        <span>${item.name} x${item.qty}</span>
+                        <span>₱${(item.price * item.qty).toFixed(2)} <button onclick="removeFromCart(${i})" style="background:red;color:white;border:none;border-radius:3px;padding:2px 6px;">X</button></span>
+                    </div>
+                `;
+            });
+            totalSpan.textContent = total.toFixed(2);
+        }
+
+        function removeFromCart(index) {
+            cart.splice(index, 1);
+            updateCart();
+        }
+
+        function checkout() {
+            const customer = document.getElementById('customerName').value;
+            const cash = parseFloat(document.getElementById('cashAmount').value);
+            const total = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
+
+            if (cart.length === 0) {
+                alert('Cart is empty!');
+                return;
+            }
+            if (!customer) {
+                alert('Enter customer name');
+                return;
+            }
+            if (!cash || cash < total) {
+                alert('Insufficient cash');
+                return;
+            }
+
+            cart.forEach(item => {
+                stockData[item.name] -= item.qty;
+            });
+
+            salesData.push({
+                id: Date.now(),
+                customer: customer,
+                items: [...cart],
+                total: total,
+                cash: cash,
+                change: cash - total,
+                date: new Date().toISOString()
+            });
+
+            localStorage.setItem('salesData', JSON.stringify(salesData));
+            localStorage.setItem('stockData', JSON.stringify(stockData));
+            alert(`Sale Complete! Change: ₱${(cash - total).toFixed(2)}`);
+
+            cart = [];
+            document.getElementById('customerName').value = '';
+            document.getElementById('cashAmount').value = '';
+            updateCart();
+            updateSummary();
+            updateStockDisplay();
+        }
+
+        function populateStockSelect() {
+            const select = document.getElementById('stockItemSelect');
+            select.innerHTML = '<option value="">Select Item</option>';
+            allItems.forEach(item => {
+                select.innerHTML += `<option value="${item}">${item} - Current: ${stockData[item]}</option>`;
+            });
+
+            const listDiv = document.getElementById('stockList');
+            listDiv.innerHTML = '';
+            allItems.forEach(item => {
+                const stock = stockData[item];
+                const color = stock === 0? 'red' : stock < 10? 'orange' : 'green';
+                listDiv.innerHTML += `<div style="padding:5px 0;border-bottom:1px solid #eee;"><b>${item}:</b> <span style="color:${color};font-weight:bold;">${stock} pcs</span></div>`;
+            });
+        }
+
+        function addStock() {
+            const item = document.getElementById('stockItemSelect').value;
+            const qty = parseInt(document.getElementById('stockQty').value);
+
+            if (!item ||!qty || qty <= 0) {
+                alert('Select item and enter valid quantity');
+                return;
+            }
+
+            stockData[item] += qty;
+            localStorage.setItem('stockData', JSON.stringify(stockData));
+            updateStockDisplay();
+            document.getElementById('stockQty').value = '';
+            alert(`Added ${qty} pcs to ${item}. New stock: ${stockData[item]}`);
+        }
+
+        function resetAllStock() {
+            if (confirm('Reset lahat ng stock to 0?')) {
+                allItems.forEach(item => stockData[item] = 0);
+                localStorage.setItem('stockData', JSON.stringify(stockData));
+                updateStockDisplay();
+                alert('All stock reset to 0');
+            }
+        }
+
+        function updateSummary() {
+            let totalSales = salesData.reduce((sum, sale) => sum + sale.total, 0);
+            let totalExpenses = expensesData.reduce((sum, exp) => sum + exp.amount, 0);
+            let netIncome = totalSales - totalExpenses;
+            let itemsSold = salesData.reduce((sum, sale) => sum + sale.items.reduce((s, i) => s + i.qty, 0), 0);
+
+            document.getElementById('totalSales').textContent = '₱' + totalSales.toFixed(2);
+            document.getElementById('totalSales2').textContent = '₱' + totalSales.toFixed(2);
+            document.getElementById('totalExpenses').textContent = '₱' + totalExpenses.toFixed(2);
+            document.getElementById('totalExpenses2').textContent = '₱' + totalExpenses.toFixed(2);
+            document.getElementById('netIncome').textContent = '₱' + netIncome.toFixed(2);
+            document.getElementById('itemsSold').textContent = itemsSold;
+        }
+
+        function saveExpense() {
+            const name = document.getElementById('expenseName').value;
+            const amount = parseFloat(document.getElementById('expenseAmount').value);
+            const category = document.getElementById('expenseCategory').value;
+
+            if (!name ||!amount || amount <= 0) {
+                alert('Please enter valid expense name and amount');
+                return;
+            }
+
+            expensesData.push({
+                id: Date.now(),
+                name: name,
+                amount: amount,
+                category: category,
+                date: new Date().toISOString()
+            });
+
+            localStorage.setItem('expensesData', JSON.stringify(expensesData));
+            updateSummary();
+            document.getElementById('expenseName').value = '';
+            document.getElementById('expenseAmount').value = '';
+            alert('Expense Added ✅');
+        }
+
+        function viewExpenses() {
+            const list
