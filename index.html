@@ -7,50 +7,36 @@
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: Arial, sans-serif; background: #f5f5f5; }
-        .header { background: #ff6b35; color: white; padding: 15px; text-align: center; position: relative; }
-        .container { padding: 15px; max-width: 500px; margin: 0 auto; }
-        .card { background: white; border-radius: 10px; padding: 15px; margin-bottom: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-        .btn { padding: 12px; border: none; border-radius: 5px; font-weight: bold; font-size: 16px; width: 100%; margin: 5px 0; }
-        .btn-checkout { background: #28a745; color: white; }
-        .btn-expense { background: #dc3545; color: white; }
-        .btn-view { background: #6c757d; color: white; }
-        .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: flex; justify-content: center; align-items: center; z-index: 9999; }
-        .modal-content { background: white; padding: 20px; border-radius: 10px; width: 90%; max-width: 400px; max-height: 80vh; overflow-y: auto; }
-        .hidden { display: none !important; }
+       .header { background: #ff6b35; color: white; padding: 15px; text-align: center; position: relative; }
+       .container { padding: 15px; max-width: 500px; margin: 0 auto; }
+       .card { background: white; border-radius: 10px; padding: 15px; margin-bottom: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+       .btn { padding: 12px; border: none; border-radius: 5px; font-weight: bold; font-size: 16px; width: 100%; margin: 5px 0; }
+       .btn-checkout { background: #28a745; color: white; }
+       .btn-expense { background: #dc3545; color: white; }
+       .btn-view { background: #6c757d; color: white; }
+       .btn-stock { background: #17a2b8; color: white; }
+       .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: flex; justify-content: center; align-items: center; z-index: 9999; }
+       .modal-content { background: white; padding: 20px; border-radius: 10px; width: 90%; max-width: 400px; max-height: 80vh; overflow-y: auto; }
+       .hidden { display: none!important; }
         input, select { width: 100%; padding: 10px; margin: 8px 0; border: 1px solid #ddd; border-radius: 5px; }
-        .item-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #eee; }
-        .qty-btn { background: #ff6b35; color: white; border: none; width: 35px; height: 35px; border-radius: 5px; font-weight: bold; font-size: 18px; }
-        
-        /* ENVELOPE ACCORDION STYLE */
-        .envelope-btn { 
-            background: #ff6b35; 
-            color: white; 
-            padding: 15px; 
-            margin: 8px 0; 
-            border: none; 
-            border-radius: 8px; 
-            font-weight: bold; 
-            font-size: 18px; 
-            width: 100%;
-            text-align: left;
-            position: relative;
+       .item-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #eee; }
+       .qty-btn { background: #ff6b35; color: white; border: none; width: 35px; height: 35px; border-radius: 5px; font-weight: bold; font-size: 18px; }
+       .qty-btn:disabled { background: #ccc; }
+       .stock-badge { background: #28a745; color: white; padding: 3px 8px; border-radius: 12px; font-size: 12px; margin-left: 5px; }
+       .stock-badge.low { background: #ffc107; color: black; }
+       .stock-badge.out { background: #dc3545; }
+
+        /* ENVELOPE ACCORDION */
+       .envelope-btn {
+            background: #ff6b35; color: white; padding: 15px; margin: 8px 0;
+            border: none; border-radius: 8px; font-weight: bold; font-size: 18px;
+            width: 100%; text-align: left; position: relative;
         }
-        .envelope-btn:after {
-            content: '▼';
-            position: absolute;
-            right: 15px;
-        }
-        .envelope-btn.active:after {
-            content: '▲';
-        }
-        .envelope-content {
-            background: #fff5f2;
-            border-radius: 0 0 8px 8px;
-            padding: 10px;
-            margin-top: -8px;
-            margin-bottom: 8px;
-            border: 2px solid #ff6b35;
-            border-top: none;
+       .envelope-btn:after { content: '▼'; position: absolute; right: 15px; }
+       .envelope-btn.active:after { content: '▲'; }
+       .envelope-content {
+            background: #fff5f2; border-radius: 0 0 8px 8px; padding: 10px;
+            margin-top: -8px; margin-bottom: 8px; border: 2px solid #ff6b35; border-top: none;
         }
     </style>
 </head>
@@ -62,25 +48,26 @@
     <div class="container">
         <!-- MENU BY ENVELOPE -->
         <div class="card">
-            <h3>🍱 Menu - Envelope System</h3>
-            
+            <h3>🍱 Menu - Stock: <span id="totalStockCount">0</span> pcs</h3>
+            <button class="btn btn-stock" onclick="document.getElementById('stockModal').classList.remove('hidden')">📦 MANAGE STOCK</button>
+
             <!-- ENVELOPE 65's -->
             <button class="envelope-btn" onclick="toggleEnvelope('env65')">📦 ENVELOPE 65's</button>
             <div id="env65" class="envelope-content hidden">
-                <div class="item-row">
-                    <span><b>Pork Siomai</b> - ₱65</span>
+                <div class="item-row" data-item="Pork Siomai 65">
+                    <span><b>Pork Siomai</b> - ₱65 <span class="stock-badge" id="stock-Pork Siomai 65">0</span></span>
                     <button class="qty-btn" onclick="addToCart('Pork Siomai 65', 65)">+</button>
                 </div>
-                <div class="item-row">
-                    <span><b>Chicken Siomai</b> - ₱65</span>
+                <div class="item-row" data-item="Chicken Siomai 65">
+                    <span><b>Chicken Siomai</b> - ₱65 <span class="stock-badge" id="stock-Chicken Siomai 65">0</span></span>
                     <button class="qty-btn" onclick="addToCart('Chicken Siomai 65', 65)">+</button>
                 </div>
-                <div class="item-row">
-                    <span><b>Beef Siomai</b> - ₱65</span>
+                <div class="item-row" data-item="Beef Siomai 65">
+                    <span><b>Beef Siomai</b> - ₱65 <span class="stock-badge" id="stock-Beef Siomai 65">0</span></span>
                     <button class="qty-btn" onclick="addToCart('Beef Siomai 65', 65)">+</button>
                 </div>
-                <div class="item-row">
-                    <span><b>Shrimp Siomai</b> - ₱65</span>
+                <div class="item-row" data-item="Shrimp Siomai 65">
+                    <span><b>Shrimp Siomai</b> - ₱65 <span class="stock-badge" id="stock-Shrimp Siomai 65">0</span></span>
                     <button class="qty-btn" onclick="addToCart('Shrimp Siomai 65', 65)">+</button>
                 </div>
             </div>
@@ -88,24 +75,24 @@
             <!-- ENVELOPE 30's -->
             <button class="envelope-btn" onclick="toggleEnvelope('env30')">📦 ENVELOPE 30's</button>
             <div id="env30" class="envelope-content hidden">
-                <div class="item-row">
-                    <span><b>Pork Siomai</b> - ₱30</span>
+                <div class="item-row" data-item="Pork Siomai 30">
+                    <span><b>Pork Siomai</b> - ₱30 <span class="stock-badge" id="stock-Pork Siomai 30">0</span></span>
                     <button class="qty-btn" onclick="addToCart('Pork Siomai 30', 30)">+</button>
                 </div>
-                <div class="item-row">
-                    <span><b>Chicken Siomai</b> - ₱30</span>
+                <div class="item-row" data-item="Chicken Siomai 30">
+                    <span><b>Chicken Siomai</b> - ₱30 <span class="stock-badge" id="stock-Chicken Siomai 30">0</span></span>
                     <button class="qty-btn" onclick="addToCart('Chicken Siomai 30', 30)">+</button>
                 </div>
-                <div class="item-row">
-                    <span><b>Beef Siomai</b> - ₱30</span>
+                <div class="item-row" data-item="Beef Siomai 30">
+                    <span><b>Beef Siomai</b> - ₱30 <span class="stock-badge" id="stock-Beef Siomai 30">0</span></span>
                     <button class="qty-btn" onclick="addToCart('Beef Siomai 30', 30)">+</button>
                 </div>
-                <div class="item-row">
-                    <span><b>Shrimp Siomai</b> - ₱30</span>
+                <div class="item-row" data-item="Shrimp Siomai 30">
+                    <span><b>Shrimp Siomai</b> - ₱30 <span class="stock-badge" id="stock-Shrimp Siomai 30">0</span></span>
                     <button class="qty-btn" onclick="addToCart('Shrimp Siomai 30', 30)">+</button>
                 </div>
-                <div class="item-row">
-                    <span><b>Japanese Siomai</b> - ₱30</span>
+                <div class="item-row" data-item="Japanese Siomai 30">
+                    <span><b>Japanese Siomai</b> - ₱30 <span class="stock-badge" id="stock-Japanese Siomai 30">0</span></span>
                     <button class="qty-btn" onclick="addToCart('Japanese Siomai 30', 30)">+</button>
                 </div>
             </div>
@@ -113,20 +100,20 @@
             <!-- BIG SIOMAI -->
             <button class="envelope-btn" onclick="toggleEnvelope('envBig')">📦 BIG SIOMAI</button>
             <div id="envBig" class="envelope-content hidden">
-                <div class="item-row">
-                    <span><b>BIG Pork Siomai</b> - ₱85</span>
+                <div class="item-row" data-item="BIG Pork Siomai">
+                    <span><b>BIG Pork</b> - ₱85 <span class="stock-badge" id="stock-BIG Pork Siomai">0</span></span>
                     <button class="qty-btn" onclick="addToCart('BIG Pork Siomai', 85)">+</button>
                 </div>
-                <div class="item-row">
-                    <span><b>BIG Chicken Siomai</b> - ₱85</span>
+                <div class="item-row" data-item="BIG Chicken Siomai">
+                    <span><b>BIG Chicken</b> - ₱85 <span class="stock-badge" id="stock-BIG Chicken Siomai">0</span></span>
                     <button class="qty-btn" onclick="addToCart('BIG Chicken Siomai', 85)">+</button>
                 </div>
-                <div class="item-row">
-                    <span><b>BIG Beef Siomai</b> - ₱85</span>
+                <div class="item-row" data-item="BIG Beef Siomai">
+                    <span><b>BIG Beef</b> - ₱85 <span class="stock-badge" id="stock-BIG Beef Siomai">0</span></span>
                     <button class="qty-btn" onclick="addToCart('BIG Beef Siomai', 85)">+</button>
                 </div>
-                <div class="item-row">
-                    <span><b>BIG Japanese Siomai</b> - ₱85</span>
+                <div class="item-row" data-item="BIG Japanese Siomai">
+                    <span><b>BIG Japanese</b> - ₱85 <span class="stock-badge" id="stock-BIG Japanese Siomai">0</span></span>
                     <button class="qty-btn" onclick="addToCart('BIG Japanese Siomai', 85)">+</button>
                 </div>
             </div>
@@ -134,20 +121,20 @@
             <!-- SIOPAO -->
             <button class="envelope-btn" onclick="toggleEnvelope('envSiopao')">📦 SIOPAO</button>
             <div id="envSiopao" class="envelope-content hidden">
-                <div class="item-row">
-                    <span><b>JUMBO Asado</b> - ₱35</span>
+                <div class="item-row" data-item="JUMBO Asado">
+                    <span><b>JUMBO Asado</b> - ₱35 <span class="stock-badge" id="stock-JUMBO Asado">0</span></span>
                     <button class="qty-btn" onclick="addToCart('JUMBO Asado', 35)">+</button>
                 </div>
-                <div class="item-row">
-                    <span><b>MINI Asado</b> - ₱20</span>
+                <div class="item-row" data-item="MINI Asado">
+                    <span><b>MINI Asado</b> - ₱20 <span class="stock-badge" id="stock-MINI Asado">0</span></span>
                     <button class="qty-btn" onclick="addToCart('MINI Asado', 20)">+</button>
                 </div>
-                <div class="item-row">
-                    <span><b>JUMBO Bola-Bola</b> - ₱35</span>
+                <div class="item-row" data-item="JUMBO Bola-Bola">
+                    <span><b>JUMBO Bola-Bola</b> - ₱35 <span class="stock-badge" id="stock-JUMBO Bola-Bola">0</span></span>
                     <button class="qty-btn" onclick="addToCart('JUMBO Bola-Bola', 35)">+</button>
                 </div>
-                <div class="item-row">
-                    <span><b>MINI Bola-Bola</b> - ₱20</span>
+                <div class="item-row" data-item="MINI Bola-Bola">
+                    <span><b>MINI Bola-Bola</b> - ₱20 <span class="stock-badge" id="stock-MINI Bola-Bola">0</span></span>
                     <button class="qty-btn" onclick="addToCart('MINI Bola-Bola', 20)">+</button>
                 </div>
             </div>
@@ -155,17 +142,13 @@
             <!-- SAUCE -->
             <button class="envelope-btn" onclick="toggleEnvelope('envSauce')">📦 SAUCE & EXTRAS</button>
             <div id="envSauce" class="envelope-content hidden">
-                <div class="item-row">
-                    <span><b>Chili Garlic</b> - ₱10</span>
+                <div class="item-row" data-item="Chili Garlic">
+                    <span><b>Chili Garlic</b> - ₱10 <span class="stock-badge" id="stock-Chili Garlic">0</span></span>
                     <button class="qty-btn" onclick="addToCart('Chili Garlic', 10)">+</button>
                 </div>
-                <div class="item-row">
-                    <span><b>Siopao Sauce</b> - ₱5</span>
+                <div class="item-row" data-item="Siopao Sauce">
+                    <span><b>Siopao Sauce</b> - ₱5 <span class="stock-badge" id="stock-Siopao Sauce">0</span></span>
                     <button class="qty-btn" onclick="addToCart('Siopao Sauce', 5)">+</button>
-                </div>
-                <div class="item-row">
-                    <span><b>Extra Rice</b> - ₱15</span>
-                    <button class="qty-btn" onclick="addToCart('Extra Rice', 15)">+</button>
                 </div>
             </div>
         </div>
@@ -189,10 +172,23 @@
             <hr style="margin:10px 0;">
             <p><b>Net Income: <span id="netIncome">₱0.00</span></b></p>
             <p>Items Sold: <span id="itemsSold">0</span></p>
-            
+
             <button class="btn btn-expense" onclick="document.getElementById('expenseModal').classList.remove('hidden')">💸 ADD EXPENSE</button>
             <button class="btn btn-view" onclick="viewExpenses()">📋 VIEW EXPENSES</button>
-            <button class="btn btn-view" onclick="viewSales()">📋 VIEW SALES HISTORY</button>
+        </div>
+    </div>
+
+    <!-- STOCK MODAL -->
+    <div id="stockModal" class="modal hidden">
+        <div class="modal-content">
+            <h3>📦 Manage Stock</h3>
+            <select id="stockItemSelect"></select>
+            <input type="number" id="stockQty" placeholder="Quantity to Add">
+            <button class="btn btn-stock" onclick="addStock()">ADD STOCK</button>
+            <button class="btn btn-view" onclick="document.getElementById('stockModal').classList.add('hidden')">CLOSE</button>
+            <hr style="margin:15px 0;">
+            <h4>Current Stock:</h4>
+            <div id="stockList"></div>
         </div>
     </div>
 
@@ -206,7 +202,6 @@
                 <option value="Ingredients">Ingredients</option>
                 <option value="Operating">Operating</option>
                 <option value="Envelope">Envelope/Packaging</option>
-                <option value="Others">Others</option>
             </select>
             <button class="btn btn-expense" onclick="saveExpense()">SAVE EXPENSE</button>
             <button class="btn btn-view" onclick="closeExpenseModal()">CANCEL</button>
@@ -222,34 +217,38 @@
         </div>
     </div>
 
-    <!-- SALES HISTORY MODAL -->
-    <div id="salesListModal" class="modal hidden">
-        <div class="modal-content">
-            <h3>📋 Today's Sales</h3>
-            <div id="salesList"></div>
-            <button class="btn btn-view" onclick="document.getElementById('salesListModal').classList.add('hidden')">CLOSE</button>
-        </div>
-    </div>
-
     <script>
         let cart = [];
         let salesData = JSON.parse(localStorage.getItem('salesData')) || [];
         let expensesData = JSON.parse(localStorage.getItem('expensesData')) || [];
+        let stockData = JSON.parse(localStorage.getItem('stockData')) || {};
         let currentOpenEnvelope = null;
-        
-        // ENVELOPE TOGGLE - ISA LANG BUKAS AT A TIME
+
+        // LISTAHAN NG LAHAT NG ITEMS
+        const allItems = [
+            'Pork Siomai 65', 'Chicken Siomai 65', 'Beef Siomai 65', 'Shrimp Siomai 65',
+            'Pork Siomai 30', 'Chicken Siomai 30', 'Beef Siomai 30', 'Shrimp Siomai 30', 'Japanese Siomai 30',
+            'BIG Pork Siomai', 'BIG Chicken Siomai', 'BIG Beef Siomai', 'BIG Japanese Siomai',
+            'JUMBO Asado', 'MINI Asado', 'JUMBO Bola-Bola', 'MINI Bola-Bola',
+            'Chili Garlic', 'Siopao Sauce'
+        ];
+
+        // INITIALIZE STOCK IF EMPTY
+        allItems.forEach(item => {
+            if (stockData[item] === undefined) stockData[item] = 0;
+        });
+
+        // ENVELOPE TOGGLE
         function toggleEnvelope(envId) {
             const allEnvelopes = document.querySelectorAll('.envelope-content');
             const allBtns = document.querySelectorAll('.envelope-btn');
             const clickedEnv = document.getElementById(envId);
             const clickedBtn = event.target;
-            
-            // Close all first
+
             allEnvelopes.forEach(env => env.classList.add('hidden'));
             allBtns.forEach(btn => btn.classList.remove('active'));
-            
-            // If clicking same one, close it. If different, open it
-            if (currentOpenEnvelope !== envId) {
+
+            if (currentOpenEnvelope!== envId) {
                 clickedEnv.classList.remove('hidden');
                 clickedBtn.classList.add('active');
                 currentOpenEnvelope = envId;
@@ -257,28 +256,65 @@
                 currentOpenEnvelope = null;
             }
         }
-        
+
+        // UPDATE STOCK DISPLAY
+        function updateStockDisplay() {
+            let totalStock = 0;
+            allItems.forEach(item => {
+                const stock = stockData[item] || 0;
+                totalStock += stock;
+                const badge = document.getElementById(`stock-${item}`);
+                const btn = document.querySelector(`[data-item="${item}"].qty-btn`);
+
+                if (badge) {
+                    badge.textContent = stock;
+                    badge.className = 'stock-badge';
+                    if (stock === 0) {
+                        badge.classList.add('out');
+                        if (btn) btn.disabled = true;
+                    } else if (stock < 10) {
+                        badge.classList.add('low');
+                        if (btn) btn.disabled = false;
+                    } else {
+                        if (btn) btn.disabled = false;
+                    }
+                }
+            });
+            document.getElementById('totalStockCount').textContent = totalStock;
+            populateStockSelect();
+        }
+
+        // ADD TO CART WITH STOCK CHECK
         function addToCart(name, price) {
+            if (stockData[name] <= 0) {
+                alert('Out of stock na si ' + name + '!');
+                return;
+            }
+
             const existing = cart.find(item => item.name === name);
             if (existing) {
+                if (existing.qty >= stockData[name]) {
+                    alert('Wala nang stock! Meron na lang ' + stockData[name] + ' pcs');
+                    return;
+                }
                 existing.qty++;
             } else {
                 cart.push({name: name, price: price, qty: 1});
             }
             updateCart();
         }
-        
+
         function updateCart() {
             const cartDiv = document.getElementById('cartItems');
             const totalSpan = document.getElementById('cartTotal');
             let total = 0;
-            
+
             if (cart.length === 0) {
                 cartDiv.innerHTML = '<p style="color:#999;">Cart is empty</p>';
                 totalSpan.textContent = '0.00';
                 return;
             }
-            
+
             cartDiv.innerHTML = '';
             cart.forEach((item, i) => {
                 total += item.price * item.qty;
@@ -291,17 +327,18 @@
             });
             totalSpan.textContent = total.toFixed(2);
         }
-        
+
         function removeFromCart(index) {
             cart.splice(index, 1);
             updateCart();
         }
-        
+
+        // CHECKOUT - AUTO BAWAS STOCK
         function checkout() {
             const customer = document.getElementById('customerName').value;
             const cash = parseFloat(document.getElementById('cashAmount').value);
             const total = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
-            
+
             if (cart.length === 0) {
                 alert('Cart is empty!');
                 return;
@@ -314,7 +351,12 @@
                 alert('Insufficient cash');
                 return;
             }
-            
+
+            // BAWAS STOCK
+            cart.forEach(item => {
+                stockData[item.name] -= item.qty;
+            });
+
             salesData.push({
                 id: Date.now(),
                 customer: customer,
@@ -324,45 +366,80 @@
                 change: cash - total,
                 date: new Date().toISOString()
             });
-            
+
             localStorage.setItem('salesData', JSON.stringify(salesData));
+            localStorage.setItem('stockData', JSON.stringify(stockData));
             alert(`Sale Complete! Change: ₱${(cash - total).toFixed(2)}`);
-            
+
             cart = [];
             document.getElementById('customerName').value = '';
             document.getElementById('cashAmount').value = '';
             updateCart();
             updateSummary();
+            updateStockDisplay();
         }
-        
+
+        // STOCK MANAGEMENT
+        function populateStockSelect() {
+            const select = document.getElementById('stockItemSelect');
+            select.innerHTML = '<option value="">Select Item</option>';
+            allItems.forEach(item => {
+                select.innerHTML += `<option value="${item}">${item} - Current: ${stockData[item]}</option>`;
+            });
+
+            const listDiv = document.getElementById('stockList');
+            listDiv.innerHTML = '';
+            allItems.forEach(item => {
+                const stock = stockData[item];
+                const color = stock === 0? 'red' : stock < 10? 'orange' : 'green';
+                listDiv.innerHTML += `<div style="padding:5px 0;border-bottom:1px solid #eee;"><b>${item}:</b> <span style="color:${color};font-weight:bold;">${stock} pcs</span></div>`;
+            });
+        }
+
+        function addStock() {
+            const item = document.getElementById('stockItemSelect').value;
+            const qty = parseInt(document.getElementById('stockQty').value);
+
+            if (!item ||!qty || qty <= 0) {
+                alert('Select item and enter valid quantity');
+                return;
+            }
+
+            stockData[item] += qty;
+            localStorage.setItem('stockData', JSON.stringify(stockData));
+            updateStockDisplay();
+            document.getElementById('stockQty').value = '';
+            alert(`Added ${qty} pcs to ${item}. New stock: ${stockData[item]}`);
+        }
+
         function updateSummary() {
             let totalSales = salesData.reduce((sum, sale) => sum + sale.total, 0);
             let totalExpenses = expensesData.reduce((sum, exp) => sum + exp.amount, 0);
             let netIncome = totalSales - totalExpenses;
             let itemsSold = salesData.reduce((sum, sale) => sum + sale.items.reduce((s, i) => s + i.qty, 0), 0);
-            
+
             document.getElementById('totalSales').textContent = '₱' + totalSales.toFixed(2);
             document.getElementById('totalExpenses').textContent = '₱' + totalExpenses.toFixed(2);
             document.getElementById('netIncome').textContent = '₱' + netIncome.toFixed(2);
             document.getElementById('itemsSold').textContent = itemsSold;
         }
-        
+
         function closeExpenseModal() {
             document.getElementById('expenseModal').classList.add('hidden');
             document.getElementById('expenseName').value = '';
             document.getElementById('expenseAmount').value = '';
         }
-        
+
         function saveExpense() {
             const name = document.getElementById('expenseName').value;
             const amount = parseFloat(document.getElementById('expenseAmount').value);
             const category = document.getElementById('expenseCategory').value;
-            
-            if (!name || !amount || amount <= 0) {
+
+            if (!name ||!amount || amount <= 0) {
                 alert('Please enter valid expense name and amount');
                 return;
             }
-            
+
             expensesData.push({
                 id: Date.now(),
                 name: name,
@@ -370,13 +447,13 @@
                 category: category,
                 date: new Date().toISOString()
             });
-            
+
             localStorage.setItem('expensesData', JSON.stringify(expensesData));
             updateSummary();
             closeExpenseModal();
             alert('Expense Added ✅');
         }
-        
+
         function viewExpenses() {
             const listDiv = document.getElementById('expenseList');
             listDiv.innerHTML = '';
@@ -392,27 +469,11 @@
             }
             document.getElementById('expenseListModal').classList.remove('hidden');
         }
-        
-        function viewSales() {
-            const listDiv = document.getElementById('salesList');
-            listDiv.innerHTML = '';
-            if (salesData.length === 0) {
-                listDiv.innerHTML = '<p>No sales today</p>';
-            } else {
-                let total = 0;
-                salesData.forEach(sale => {
-                    total += sale.total;
-                    let items = sale.items.map(i => `${i.name} x${i.qty}`).join(', ');
-                    listDiv.innerHTML += `<div style="border-bottom:1px solid #eee;padding:10px 0;"><b>${sale.customer}</b> - ₱${sale.total.toFixed(2)}<br><small>${items}</small></div>`;
-                });
-                listDiv.innerHTML += `<hr><b>Total: ₱${total.toFixed(2)}</b>`;
-            }
-            document.getElementById('salesListModal').classList.remove('hidden');
-        }
-        
-        // Load on startup
+
+        // LOAD ON STARTUP
         updateSummary();
         updateCart();
+        updateStockDisplay();
     </script>
 </body>
 </html>
