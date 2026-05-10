@@ -1,1 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dhan Siomai POS</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: Arial, sans-serif; background: #f5f5f5; }
+        .header { background: #ff6b35; color: white; padding: 15px; text-align: center; position: relative; }
+        .admin-btn { position: absolute; right: 15px; top: 15px; background: white; color: #ff6b35; border: none; padding: 8px 12px; border-radius: 5px; font-weight: bold; }
+        .container { padding: 15px; max-width: 500px; margin: 0 auto; }
+        .card { background: white; border-radius: 10px; padding: 15px; margin-bottom: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .btn { padding: 12px; border: none; border-radius: 5px; font-weight: bold; font-size: 16px; width: 100%; margin: 5px 0; }
+        .btn-checkout { background: #28a745; color: white; }
+        .btn-print { background: #007bff; color: white; }
+        .btn-expense { background: #dc3545; color: white; }
+        .btn-view { background: #6c757d; color: white; }
+        .btn-add { background: #ff6b35; color: white; }
+        .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: flex; justify-content: center; align-items: center; z-index: 9999; }
+        .modal-content { background: white; padding: 20px; border-radius: 10px; width: 90%; max-width: 400px; max-height: 80vh; overflow-y: auto; }
+        .hidden { display: none !important; }
+        input, select { width: 100%; padding: 10px; margin: 8px 0; border: 1px solid #ddd; border-radius: 5px; }
+        .item-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #eee; }
+        .qty-btn { background: #ff6b35; color: white; border: none; width: 35px; height: 35px; border-radius: 5px; font-weight: bold; font-size: 18px; }
+        .category-title { background: #ff6b35; color: white; padding: 8px; margin: 10px 0 5px 0; border-radius: 5px; font-weight: bold; text-align: center; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h2>DHAN SIOMAI POS</h2>
+        <button class="admin-btn">⚙️ ADMIN OFF</button>
+    </div>
 
+    <div class="container">
+        <!-- MENU BY ENVELOPE -->
+        <div class="card">
+            <h3>🍱 Menu</h3>
+            
+            <div class="category-title">ENVELOPE 65</div>
+            <div class="item-row">
+                <span><b>BIG SIOMAI</b> - ₱65</span>
+                <button class="qty-btn" onclick="addToCart('BIG SIOMAI', 65)">+</button>
+            </div>
+            <div class="item-row">
+                <span><b>Siopao</b> - ₱65</span>
+                <button class="qty-btn" onclick="addToCart('Siopao', 65)">+</button>
+            </div>
+
+            <div class="category-title">ENVELOPE 30</div>
+            <div class="item-row">
+                <span><b>Dumplings (5pcs)</b> - ₱30</span>
+                <button class="qty-btn" onclick="addToCart('Dumplings', 30)">+</button>
+            </div>
+            <div class="item-row">
+                <span><b>Siomai (3pcs)</b> - ₱30</span>
+                <button class="qty-btn" onclick="addToCart('Siomai 3pcs', 30)">+</button>
+            </div>
+
+            <div class="category-title">SAUCE & EXTRAS</div>
+            <div class="item-row">
+                <span><b>Chili Garlic Sauce</b> - ₱10</span>
+                <button class="qty-btn" onclick="addToCart('Chili Garlic Sauce', 10)">+</button>
+            </div>
+            <div class="item-row">
+                <span><b>Toyomansi</b> - ₱5</span>
+                <button class="qty-btn" onclick="addToCart('Toyomansi', 5)">+</button>
+            </div>
+            <div class="item-row">
+                <span><b>Extra Rice</b> - ₱15</span>
+                <button class="qty-btn" onclick="addToCart('Extra Rice', 15)">+</button>
+            </div>
+        </div>
+
+        <!-- CART -->
+        <div class="card">
+            <h3>🛒 Cart</h3>
+            <div id="cartItems"><p style="color:#999;">Cart is empty</p></div>
+            <hr style="margin:10px 0;">
+            <p><b>Total: ₱<span id="cartTotal">0.00</span></b></p>
+            <input type="text" id="customerName" placeholder="Customer Name">
+            <input type="number" id="cashAmount" placeholder="Cash Amount">
+            <button class="btn btn-checkout" onclick="checkout()">💰 CHECKOUT</button>
+            <button class="btn btn-print" onclick="printLastReceipt()">🖨️ PRINT LAST RECEIPT</button>
+        </div>
+
+        <!-- SUMMARY -->
+        <div class="card">
+            <h3>📊 Today's Summary</h3>
+            <p>Total Sales: <span id="totalSales">₱0.00</span></p>
+            <p>Total Expenses: <span id="totalExpenses">₱0.00</span></p>
+            <hr style="margin:10px 0;">
+            <p><b>Net Income: <span id="netIncome">₱0.00</span></b></p>
+            <p>Items Sold: <span id="itemsSold">0</span></p>
+            
+            <button class="btn btn-expense" onclick="document.getElementById('expenseModal').classList.remove('hidden')">💸 ADD EXPENSE</button>
+            <button class="btn btn-view" onclick="viewExpenses()">📋 VIEW EXPENSES</button>
+            <button class="btn btn-view" onclick="viewSales()">📋 VIEW SALES HISTORY</button>
+        </div>
+    </div>
+
+    <!-- EXPENSE MODAL -->
+    <div id="expenseModal" class="modal hidden">
+        <div class="modal-content">
+            <h3>💸 Add Expense</h3>
+            <input type="text" id="expenseName" placeholder="Expense Name - e.g. Pork, Gas">
+            <input type="number" id="expenseAmount" placeholder="Amount">
+            <select id="expenseCategory">
+                <option value="Ingredients">Ingredients</option>
+                <option value="Operating">Operating</option>
+                <option value="Envelope">Envelope/Packaging</option>
+                <option value="Others">Others</option>
+            </select>
+            <button class="btn btn-expense" onclick="saveExpense()">SAVE EXPENSE</button>
+            <button class="btn btn-view" onclick="closeExpenseModal()">CANCEL</button>
+        </div>
+    </div>
+
+    <!-- EXPENSE LIST MODAL -->
+    <div id="expenseListModal" class="modal hidden">
+        <div class="modal-content">
+            <h3>📋 Today's Expenses</h3>
+            <div id="expenseList"></div>
+            <button class="btn btn-view" onclick="document.getElementById('expenseListModal').classList.add('hidden')">CLOSE</button>
+        </div>
+    </div>
+
+    <!-- SALES HISTORY MODAL -->
+    <div id="salesListModal" class="modal hidden">
+        <div class="modal-content">
+            <h3>📋 Today's Sales</h3>
+            <div id="salesList"></div>
+            <button class="btn btn-view" onclick="document.getElementById('salesListModal').classList.add('hidden')">CLOSE</button>
+        </div>
+    </div>
+
+    <script>
+        let cart = [];
+        let salesData = JSON.parse(localStorage.getItem('salesData')) || [];
+        let expensesData = JSON.parse(localStorage.getItem('expensesData')) || [];
+        let lastReceipt = null;
+        
+        function addToCart(name, price) {
+            const existing = cart.find(item => item.name === name);
+            if (existing) {
+                existing.qty++;
+            } else {
+                cart.push({name: name, price: price, qty: 1});
+            }
+            updateCart();
+        }
+        
+        function updateCart() {
+            const cartDiv = document.getElementById('cartItems');
+            const totalSpan = document.getElementById('cartTotal');
+            let total = 0;
+            
+            if (cart.length === 0) {
+                cartDiv.innerHTML = '<p style="color:#999;">Cart is empty</p>';
+                totalSpan.textContent = '0.00';
+                return;
+            }
+            
+            cartDiv.innerHTML = '';
+            cart.forEach((item, i) => {
+                total += item.price * item.qty;
+                cartDiv.innerHTML += `
+                    <div class="item-row">
+                        <span>${item.name} x${item.qty}</span>
+                        <span>₱${(item.price * item.qty).toFixed(2)} <button onclick="removeFromCart(${i})" style="background:red;color:white;border:none;border-radius:3px;padding:2px 6px;">X</button></span>
+                    </div>
+                `;
+            });
+            totalSpan.textContent = total.toFixed(2);
+        }
+        
+        function removeFromCart(index) {
+            cart.splice(index, 1);
+            updateCart();
+        }
+        
+        function checkout() {
+            const customer = document.getElementById('customerName').value;
+            const cash = parseFloat(document.getElementById('cashAmount').value);
+            const total = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
+            
+            if (cart.length === 0) {
+                alert('Cart is empty!');
+                return;
+            }
+            if (!customer) {
+                alert('Enter customer name');
+                return;
+            }
+            if (!cash || cash < total) {
+                alert('Insufficient cash');
+                return;
+            }
+            
+            const sale = {
+                id: Date.now(),
+                customer: customer,
+                items: [...cart],
+                total: total,
+                cash: cash,
+                change: cash - total,
+                date: new Date().toISOString()
+            };
+            
+            salesData.push(sale);
+            lastReceipt = sale;
+            localStorage.setItem('salesData', JSON.stringify(salesData));
+            alert(`Sale Complete! Change: ₱${(cash - total).toFixed(2)}`);
+            
+            cart = [];
+            document.getElementById('customerName').value = '';
+            document.getElementById('cashAmount').value = '';
+            updateCart();
+            updateSummary();
+        }
+        
+        function printLastReceipt() {
+            if (!lastReceipt) {
+                alert('No receipt to print');
+                return;
+            }
+            alert('Printing receipt for: ' + lastReceipt.customer + ' - ₱' + lastReceipt.total.toFixed(2));
+        }
+        
+        function updateSummary() {
+            let totalSales = salesData.reduce((sum, sale) => sum + sale.total, 0);
+            let totalExpenses = expensesData.reduce((sum, exp) => sum + exp.amount, 0);
+            let netIncome = totalSales - totalExpenses;
+            let itemsSold = salesData.reduce((sum, sale) => sum + sale.items.reduce((s, i) => s + i.qty, 0), 0);
+            
+            document.getElementById('totalSales').textContent = '₱' + totalSales.toFixed(2);
+            document.getElementById('totalExpenses').textContent = '₱' + totalExpenses.toFixed(2);
+            document.getElementById('netIncome').textContent = '₱' + netIncome.toFixed(2);
+            document.getElementById('itemsSold').textContent = itemsSold;
+        }
+        
+        function closeExpenseModal() {
+            document.getElementById('expenseModal').classList.add('hidden');
+            document.getElementById('expenseName').value = '';
+            document.getElementById('expenseAmount').value = '';
+        }
+        
+        function saveExpense() {
+            const name = document.getElementById('expenseName').value;
+            const amount = parseFloat(document.getElementById('expenseAmount').value);
+            const category = document.getElementById('expenseCategory').value;
+            
+            if (!name || !amount || amount <= 0) {
+                alert('Please enter valid expense name and amount');
+                return;
+            }
+            
+            expensesData.push({
+                id: Date.now(),
+                name: name,
+                amount: amount,
+                category: category,
+                date: new Date().toISOString()
+            });
+            
+            localStorage.setItem('expensesData', JSON.stringify(expensesData));
+            updateSummary();
+            closeExpenseModal();
+            alert('Expense Added ✅');
+        }
+        
+        function viewExpenses() {
+            const listDiv = document.getElementById('expenseList');
+            listDiv.innerHTML = '';
+            if (expensesData.length === 0) {
+                listDiv.innerHTML = '<p>No expenses today</p>';
+            } else {
+                let total = 0;
+                expensesData.forEach(exp => {
+                    total += exp.amount;
+                    listDiv.innerHTML += `<div style="border-bottom:1px solid #eee;padding:10px 0;"><b>${exp.name}</b> - ₱${exp.amount.toFixed(2)}<br><small>${exp.category}</small></div>`;
+                });
+                listDiv.innerHTML += `<hr><b>Total: ₱${total.toFixed(2)}</b>`;
+            }
+            document.getElementById('expenseListModal').classList.remove('hidden');
+        }
+        
+        function viewSales() {
+            const listDiv = document.getElementById('salesList');
+            listDiv.innerHTML = '';
+            if (salesData.length === 0) {
+                listDiv.innerHTML = '<p>No sales today</p>';
+            } else {
+                let total = 0;
+                salesData.forEach(sale => {
+                    total += sale.total;
+                    let items = sale.items.map(i => `${i.name} x${i.qty}`).join(', ');
+                    listDiv.innerHTML += `<div style="border-bottom:1px solid #eee;padding:10px 0;"><b>${sale.customer}</b> - ₱${sale.total.toFixed(2)}<br><small>${items}</small></div>`;
+                });
+                listDiv.innerHTML += `<hr><b>Total: ₱${total.toFixed(2)}</b>`;
+            }
+            document.getElementById('salesListModal').classList.remove('hidden');
+        }
+        
+        // Load on startup
+        updateSummary();
+        updateCart();
+    </script>
+</body>
+</html>
