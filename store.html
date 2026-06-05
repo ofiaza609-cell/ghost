@@ -15,7 +15,6 @@ body {background:#FFF8E1; padding:10px;}
   padding:15px;
   box-shadow:0 6px 20px rgba(0,0,0,0.12);
   border-top:6px solid #D32F2F;
-  position:relative;
 }
 h2 {
   color:#D32F2F;
@@ -34,7 +33,6 @@ h2 {
   font-size:12px;
 }
 
-/* Category buttons */
 .cat-grid {
   display:grid;
   grid-template-columns:repeat(3, 1fr);
@@ -53,7 +51,6 @@ h2 {
 }
 .cat-btn.active {background:#D32F2F; color:white;}
 
-/* Product Grid */
 .prod-grid {
   display:grid;
   grid-template-columns:repeat(2, 1fr);
@@ -94,7 +91,6 @@ h2 {
   color:#666;
 }
 
-/* Floating Cart */
 .cart-float {
   position:fixed;
   bottom:0;
@@ -192,7 +188,6 @@ h2 {
   margin:8px 0;
 }
 
-/* Payment Modal */
 .modal {
   display:none;
   position:fixed;
@@ -313,29 +308,26 @@ h2 {
   cursor:not-allowed;
 }
 
-/* Receipt for Print - FIXED */
+/* Receipt - FIXED FOR PRINT */
 .receipt {
-  display:block;
-  position:absolute;
-  left:-9999px;
-  top:-9999px;
+  display:none;
   font-family:monospace;
-  font-size:12px;
-  white-space:pre;
-  line-height:1.5;
+  font-size:11px;
   color:black;
   background:white;
-  padding:10px;
+  padding:5px;
   width:80mm;
+  line-height:1.4;
 }
 @media print {
   body * {visibility:hidden;}
-.receipt,.receipt * {visibility:visible;}
-.receipt {
+ .receipt,.receipt * {visibility:visible;}
+ .receipt {
     position:absolute;
     left:0;
     top:0;
     width:100%;
+    display:block!important;
   }
 }
 </style>
@@ -346,7 +338,6 @@ h2 {
   <button class="back-btn" onclick="window.location='index.html'">← Back to Menu</button>
   <h2>🛒 Store POS</h2>
 
-  <!-- Categories -->
   <div class="cat-grid">
     <button class="cat-btn active" onclick="filterCat('all', this)">All</button>
     <button class="cat-btn" onclick="filterCat('65s', this)">65's</button>
@@ -358,11 +349,9 @@ h2 {
     <button class="cat-btn" onclick="filterCat('others', this)">Others</button>
   </div>
 
-  <!-- Products -->
   <div class="prod-grid" id="prodGrid"></div>
 </div>
 
-<!-- Floating Cart -->
 <div class="cart-float">
   <div class="cart-header">
     <span class="cart-title">🛒 Cart</span>
@@ -375,7 +364,6 @@ h2 {
   <button class="checkout-btn" id="checkoutBtn" onclick="showPayment()" disabled>Checkout</button>
 </div>
 
-<!-- Payment Modal -->
 <div class="modal" id="paymentModal">
   <div class="modal-box">
     <h3>📋 Review Order</h3>
@@ -517,41 +505,34 @@ function removeItem(index) {
 
 function changeQty(index, delta) {
   cart[index].qty += delta;
-
   let prod;
   Object.keys(products).forEach(cat => {
     const p = products[cat].find(x => x.id === cart[index].id);
     if(p) prod = p;
   });
-
   if(cart[index].qty < 1) cart[index].qty = 1;
   if(prod && cart[index].qty > prod.stocks) cart[index].qty = prod.stocks;
-
   renderCart();
 }
 
 function setQty(index, value) {
   let qty = parseInt(value) || 1;
-
   let prod;
   Object.keys(products).forEach(cat => {
     const p = products[cat].find(x => x.id === cart[index].id);
     if(p) prod = p;
   });
-
   if(qty < 1) qty = 1;
   if(prod && qty > prod.stocks) {
     qty = prod.stocks;
     alert('Max stock: ' + prod.stocks + ' lang boss!');
   }
-
   cart[index].qty = qty;
   renderCart();
 }
 
 function showPayment() {
   if(cart.length === 0) return;
-
   const modal = document.getElementById('paymentModal');
   const reviewList = document.getElementById('reviewList');
   const reviewTotal = document.getElementById('reviewTotal');
@@ -575,7 +556,6 @@ function showPayment() {
   document.getElementById('gcashProof').style.display = 'none';
   selectedPayment = 'Cash';
   document.getElementById('proofInput').value = '';
-
   modal.classList.add('active');
 }
 
@@ -655,7 +635,15 @@ function processCheckout(paymentMethod, total) {
   generateReceipt(paymentMethod, total);
   printReceipt();
 
-  alert(`✓ SALE COMPLETE\nPayment: ${paymentMethod}\nTotal: ₱${total.toFixed(2)}`);
+  let msg = `✓ SALE COMPLETE\n`;
+  msg += `Payment: ${paymentMethod}\n`;
+  msg += `Total: ₱${total.toFixed(2)}\n\n`;
+  msg += `BREAKDOWN:\n`;
+  cart.forEach(item => {
+    msg += `${item.name} x${item.qty} = ₱${(item.price * item.qty).toFixed(2)}\n`;
+  });
+  msg += `\nThank you! Come again! 🙏`;
+  alert(msg);
 
   cart = [];
   renderCart();
@@ -665,51 +653,50 @@ function processCheckout(paymentMethod, total) {
 
 function generateReceipt(paymentMethod, total) {
   const now = new Date();
-  let receiptText = '================================\n';
-  receiptText += ' SIOMAI FACTORY\n';
-  receiptText += ' 123 Main St, QC\n';
-  receiptText += ' Tel: 0917-XXX-XXXX\n';
-  receiptText += now.toLocaleString('en-PH') + '\n';
-  receiptText += ' Cashier: ADMIN\n';
-  receiptText += '================================\n\n';
+  let receiptHTML = `
+    <div style="text-align:center; font-weight:800;">================================</div>
+    <div style="text-align:center; font-weight:800;">SIOMAI FACTORY</div>
+    <div style="text-align:center;">123 Main St, QC</div>
+    <div style="text-align:center;">Tel: 0917-XXX-XXXX</div>
+    <div style="text-align:center;">${now.toLocaleString('en-PH')}</div>
+    <div style="text-align:center;">Cashier: ADMIN</div>
+    <div style="text-align:center; font-weight:800;">================================</div>
+    <br>
+  `;
 
   cart.forEach(item => {
-    receiptText += `${item.name}\n`;
-    receiptText += `${item.qty} x ₱${item.price} = ₱${(item.price * item.qty).toFixed(2)}\n\n`;
+    receiptHTML += `<div>${item.name}</div>`;
+    receiptHTML += `<div>${item.qty} x ₱${item.price} = ₱${(item.price * item.qty).toFixed(2)}</div><br>`;
   });
 
-  receiptText += '--------------------------------\n';
-  receiptText += `SUBTOTAL: ₱${total.toFixed(2)}\n`;
-  receiptText += `TOTAL: ₱${total.toFixed(2)}\n`;
-  receiptText += `PAYMENT: ${paymentMethod}\n`;
+  receiptHTML += `<div>--------------------------------</div>`;
+  receiptHTML += `<div style="text-align:right;">SUBTOTAL: ₱${total.toFixed(2)}</div>`;
+  receiptHTML += `<div style="text-align:right; font-weight:800; font-size:14px;">TOTAL: ₱${total.toFixed(2)}</div>`;
+  receiptHTML += `<div>PAYMENT: ${paymentMethod}</div>`;
 
   if(paymentMethod === 'Cash') {
     const cash = parseFloat(document.getElementById('cashInput').value) || 0;
-    receiptText += `CASH: ₱${cash.toFixed(2)}\n`;
-    receiptText += `CHANGE: ₱${(cash - total).toFixed(2)}\n`;
+    receiptHTML += `<div>CASH: ₱${cash.toFixed(2)}</div>`;
+    receiptHTML += `<div>CHANGE: ₱${(cash - total).toFixed(2)}</div>`;
   } else {
-    receiptText += `GCASH PROOF: UPLOADED ✓\n`;
+    receiptHTML += `<div>GCASH PROOF: UPLOADED ✓</div>`;
   }
 
-  receiptText += '================================\n';
-  receiptText += ' Thank you! Come again! 🙏\n';
-  receiptText += '================================\n';
+  receiptHTML += `<div style="text-align:center; font-weight:800;">================================</div>`;
+  receiptHTML += `<div style="text-align:center; font-weight:800;">Thank you! Come again! 🙏</div>`;
+  receiptHTML += `<div style="text-align:center; font-weight:800;">================================</div>`;
 
-  document.getElementById('receipt').innerText = receiptText;
+  document.getElementById('receipt').innerHTML = receiptHTML;
+  document.getElementById('receipt').style.display = 'block';
 }
 
 function printReceipt() {
-  document.getElementById('receipt').style.left = '-9999px';
-  document.getElementById('receipt').style.top = '-9999px';
-
   setTimeout(() => {
     window.print();
     setTimeout(() => {
-      document.getElementById('receipt').style.left = '0';
-      document.getElementById('receipt').style.top = '0';
       document.getElementById('receipt').style.display = 'none';
-    }, 500);
-  }, 200);
+    }, 1000);
+  }, 300);
 }
 
 loadProducts();
