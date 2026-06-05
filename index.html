@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Siomai Factory POS - Categories</title>
+<title>Product Manager - Siomai Factory</title>
 <style>
 * {margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI', sans-serif;}
 body {background:#FFF8E1; padding:10px;}
@@ -27,26 +27,25 @@ h2 {color:#D32F2F; text-align:center; margin-bottom:12px;}
   font-size:14px;
   cursor:pointer;
 }
-.cat-btn:active {transform:scale(0.95);}
 
 .product-form {
   background:#FFF8E1;
   border:2px dashed #FFCC80;
   border-radius:10px;
   padding:12px;
-  margin-bottom:10px;
+  margin-bottom:15px;
 }
 .product-form input {
   width:100%;
-  padding:8px;
-  margin:4px 0;
+  padding:10px;
+  margin:5px 0;
   border:2px solid #FFE0B2;
   border-radius:6px;
-  font-size:13px;
+  font-size:14px;
 }
 .add-prod-btn {
   width:100%;
-  padding:10px;
+  padding:12px;
   background:#2E7D32;
   color:white;
   border:none;
@@ -54,164 +53,96 @@ h2 {color:#D32F2F; text-align:center; margin-bottom:12px;}
   font-weight:700;
   cursor:pointer;
   margin-top:5px;
+  font-size:14px;
 }
 
 .prod-list {
   display:grid;
   grid-template-columns:repeat(2, 1fr);
-  gap:6px;
-  margin-bottom:15px;
+  gap:8px;
 }
 .prod-card {
-  background:white;
+  background:#FFFDF7;
   border:2px solid #FFCC80;
   border-radius:10px;
-  padding:8px;
+  padding:10px;
   text-align:center;
+  position:relative;
 }
-.prod-name {font-weight:700; font-size:12px; color:#D32F2F; margin-bottom:4px;}
-.prod-info {font-size:11px; color:#666; margin:2px 0;}
+.prod-name {font-weight:800; font-size:13px; color:#D32F2F; margin-bottom:6px;}
 .prod-card input {
-  width:50px;
-  padding:4px;
+  width:100%;
+  padding:6px;
   text-align:center;
   border:1px solid #ddd;
   border-radius:4px;
-  margin:4px 0;
+  margin:3px 0;
   font-size:12px;
 }
-.add-cart-btn {
+.save-btn {
   width:100%;
   padding:6px;
-  background:#D32F2F;
+  background:#1976D2;
   color:white;
   border:none;
-  border-radius:6px;
+  border-radius:4px;
   font-size:11px;
   font-weight:700;
   cursor:pointer;
+  margin-top:4px;
 }
-
-.cart {
-  background:#FFF8E1;
-  border-radius:8px;
-  padding:10px;
-  min-height:100px;
-  margin-bottom:10px;
-}
-.cart-item {
-  display:flex;
-  justify-content:space-between;
-  font-size:13px;
-  padding:4px 0;
-  border-bottom:1px dashed #ddd;
-}
-.total {
-  font-size:22px;
-  font-weight:900;
-  color:#D32F2F;
-  text-align:right;
-  margin:10px 0;
-}
-.btn-group {display:flex; gap:6px;}
-.btn {
-  flex:1;
-  padding:14px;
+.delete-btn {
+  position:absolute;
+  top:4px;
+  right:4px;
+  background:#C62828;
+  color:white;
   border:none;
-  border-radius:8px;
-  font-weight:800;
+  border-radius:50%;
+  width:22px;
+  height:22px;
   cursor:pointer;
+  font-size:16px;
+  line-height:1;
+  font-weight:bold;
 }
-.checkout {background:#4CAF50; color:white;}
-.clear {background:#f44336; color:white;}
 </style>
 </head>
 <body>
 
 <div class="container">
-  <div id="mainMenu">
-    <h2>📋 Main Menu</h2>
-    <p style="text-align:center; color:#666; font-size:12px; margin-bottom:12px;">Welcome to my POS, admin!</p>
+  <button class="back-btn" onclick="backToCategories()">← Back to Categories</button>
+  <h2 id="catTitle">65's Siomai</h2>
 
-    <div class="cat-grid">
-      <button class="cat-btn" onclick="showPOS()">🛒 Products<br>POS Sales</button>
-      <button class="cat-btn">📦 Daily<br>Production</button>
-      <button class="cat-btn">💸 Daily<br>Expenses</button>
-      <button class="cat-btn">💰 Daily<br>Income</button>
-      <button class="cat-btn">📊 Monthly<br>Expenses</button>
-      <button class="cat-btn">📈 Net<br>Profit</button>
-    </div>
+  <!-- Add Product Form -->
+  <div class="product-form">
+    <h4 style="color:#D32F2F; margin-bottom:6px;">+ Add Product to <span id="catName">65's Siomai</span></h4>
+    <input type="text" id="prodName" placeholder="Product Name ex: Pork Siomai">
+    <input type="number" id="prodStocks" placeholder="Number of Stocks" value="100">
+    <input type="number" id="prodPrice" placeholder="Price" value="8" step="0.01">
+    <button class="add-prod-btn" onclick="addProduct()">Add Product</button>
   </div>
 
-  <div id="posPage" style="display:none;">
-    <button class="back-btn" onclick="backToMenu()">← Back to Menu</button>
-    <h2>🛒 Select Category</h2>
-
-    <div class="cat-grid">
-      <button class="cat-btn" onclick="openCategory('65s')">65's</button>
-      <button class="cat-btn" onclick="openCategory('30s')">30's</button>
-      <button class="cat-btn" onclick="openCategory('big')">Big SIOMAI</button>
-      <button class="cat-btn" onclick="openCategory('dumplings')">Dumplings</button>
-      <button class="cat-btn" onclick="openCategory('siopao')">SIOPAO</button>
-      <button class="cat-btn" onclick="openCategory('sauce')">Sauce</button>
-      <button class="cat-btn" onclick="openCategory('others')">Others</button>
-    </div>
-  </div>
-
-  <div id="categoryPage" style="display:none;">
-    <button class="back-btn" onclick="backToCategories()">← Back to Categories</button>
-    <h2 id="catTitle"></h2>
-
-    <!-- Add Product Form -->
-    <div class="product-form">
-      <h4 style="color:#D32F2F; margin-bottom:5px;">+ Add Product to <span id="catName"></span></h4>
-      <input type="text" id="prodName" placeholder="Product Name ex: Pork Siomai">
-      <input type="number" id="prodStocks" placeholder="Number of Stocks" value="100">
-      <input type="number" id="prodPrice" placeholder="Price" value="8" step="0.01">
-      <button class="add-prod-btn" onclick="addProduct()">Add Product</button>
-    </div>
-
-    <!-- Product List -->
-    <div class="prod-list" id="prodList"></div>
-
-    <!-- Cart -->
-    <div class="cart" id="cart">
-      <p style="text-align:center; color:#999; font-size:12px;">No items in cart</p>
-    </div>
-    <div class="total" id="total">Total: ₱0</div>
-
-    <div class="btn-group">
-      <button class="btn checkout" onclick="checkout()">✓ CHECKOUT</button>
-      <button class="btn clear" onclick="clearCart()">🗑️ CLEAR</button>
-    </div>
-  </div>
+  <!-- Product List - Editable -->
+  <div class="prod-list" id="prodList"></div>
 </div>
 
 <script>
-let currentCat = '';
+let currentCat = '65s'; // Default sa 65's para sa screenshot mo
 let products = JSON.parse(localStorage.getItem('products') || '{}');
-let cart = [];
 
 // Init categories
 ['65s','30s','big','dumplings','siopao','sauce','others'].forEach(cat => {
   if(!products[cat]) products[cat] = [];
 });
 
-function showPOS() {
-  document.getElementById('mainMenu').style.display = 'none';
-  document.getElementById('posPage').style.display = 'block';
-}
-
-function backToMenu() {
-  document.getElementById('posPage').style.display = 'none';
-  document.getElementById('mainMenu').style.display = 'block';
+// Auto load 65's pag open
+window.onload = function() {
+  openCategory('65s');
 }
 
 function openCategory(cat) {
   currentCat = cat;
-  document.getElementById('posPage').style.display = 'none';
-  document.getElementById('categoryPage').style.display = 'block';
-
   const catNames = {
     '65s': "65's Siomai",
     '30s': "30's Siomai",
@@ -221,15 +152,13 @@ function openCategory(cat) {
     'sauce': 'Sauce',
     'others': 'Others'
   };
-
   document.getElementById('catTitle').innerText = catNames[cat];
   document.getElementById('catName').innerText = catNames[cat];
   renderProducts();
 }
 
 function backToCategories() {
-  document.getElementById('categoryPage').style.display = 'none';
-  document.getElementById('posPage').style.display = 'block';
+  alert('Dito mo na lang boss palitan yung category. Next gawa tayo category selector page.');
 }
 
 function addProduct() {
@@ -257,7 +186,7 @@ function renderProducts() {
   const prods = products[currentCat];
 
   if(prods.length === 0) {
-    list.innerHTML = '<p style="grid-column:span 2; text-align:center; color:#999; padding:20px;">No products yet. Add muna boss!</p>';
+    list.innerHTML = '<p style="grid-column:span 2; text-align:center; color:#999; padding:30px;">No products yet. Add muna boss!</p>';
     return;
   }
 
@@ -265,69 +194,41 @@ function renderProducts() {
   prods.forEach(prod => {
     html += `
       <div class="prod-card">
+        <button class="delete-btn" onclick="deleteProduct(${prod.id})">×</button>
         <div class="prod-name">${prod.name}</div>
-        <div class="prod-info">Stocks: ${prod.stocks}</div>
-        <div class="prod-info">Price: ₱${prod.price}</div>
-        <input type="number" id="qty${prod.id}" value="1" min="1" max="${prod.stocks}">
-        <button class="add-cart-btn" onclick="addToCart(${prod.id})">Add to Cart</button>
+        <input type="number" id="stocks${prod.id}" value="${prod.stocks}" placeholder="Stocks">
+        <input type="number" id="price${prod.id}" value="${prod.price}" step="0.01" placeholder="Price">
+        <button class="save-btn" onclick="saveProduct(${prod.id})">Save Changes</button>
       </div>
     `;
   });
   list.innerHTML = html;
 }
 
-function addToCart(prodId) {
+function saveProduct(prodId) {
   const prod = products[currentCat].find(p => p.id === prodId);
-  const qty = parseInt(document.getElementById('qty' + prodId).value) || 1;
+  prod.stocks = parseInt(document.getElementById('stocks' + prodId).value) || 0;
+  prod.price = parseFloat(document.getElementById('price' + prodId).value) || 0;
 
-  if(qty > prod.stocks) {
-    alert('Kulang stocks boss!');
-    return;
-  }
+  localStorage.setItem('products', JSON.stringify(products));
 
-  const existing = cart.find(item => item.id === prodId);
-  if(existing) {
-    existing.qty += qty;
-  } else {
-    cart.push({id: prodId, name: prod.name, price: prod.price, qty});
-  }
-
-  renderCart();
+  // Quick feedback
+  const btn = event.target;
+  const oldText = btn.innerText;
+  btn.innerText = '✓ Saved';
+  btn.style.background = '#4CAF50';
+  setTimeout(() => {
+    btn.innerText = oldText;
+    btn.style.background = '#1976D2';
+  }, 800);
 }
 
-function renderCart() {
-  const cartDiv = document.getElementById('cart');
-  let total = 0;
-
-  if(cart.length === 0) {
-    cartDiv.innerHTML = '<p style="text-align:center; color:#999; font-size:12px;">No items in cart</p>';
-    document.getElementById('total').innerText = 'Total: ₱0';
-    return;
+function deleteProduct(prodId) {
+  if(confirm('Delete this product?')) {
+    products[currentCat] = products[currentCat].filter(p => p.id!== prodId);
+    localStorage.setItem('products', JSON.stringify(products));
+    renderProducts();
   }
-
-  let html = '';
-  cart.forEach(item => {
-    const subtotal = item.price * item.qty;
-    total += subtotal;
-    html += `<div class="cart-item"><span>${item.name} x${item.qty}</span><span>₱${subtotal.toFixed(2)}</span></div>`;
-  });
-
-  cartDiv.innerHTML = html;
-  document.getElementById('total').innerText = 'Total: ₱' + total.toFixed(2);
-}
-
-function checkout() {
-  if(cart.length === 0) {
-    alert('Add items muna boss!');
-    return;
-  }
-  alert('✓ SALE COMPLETE\n' + document.getElementById('total').innerText);
-  clearCart();
-}
-
-function clearCart() {
-  cart = [];
-  renderCart();
 }
 </script>
 </body>
