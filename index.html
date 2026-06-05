@@ -57,7 +57,6 @@ h2 {
   cursor:pointer;
   text-align:center;
   line-height:1.4;
-  transition:0.15s;
 }
 .menu-btn:active {transform:scale(0.95); background:#FFA726;}
 
@@ -74,16 +73,23 @@ h2 {
   margin-bottom:10px;
   font-size:14px;
 }
-.product-form input,.product-form input[type="file"] {
+.input-group {margin-bottom:12px;}
+.input-group label {
+  font-size:12px;
+  font-weight:700;
+  color:#D32F2F;
+  margin-bottom:4px;
+  display:block;
+}
+.input-group input {
   width:100%;
   padding:12px;
-  margin:6px 0;
   border:2px solid #FFE0B2;
   border-radius:8px;
   font-size:14px;
   background:white;
 }
-.product-form input:focus {outline:none; border-color:#D32F2F;}
+.input-group input:focus {outline:none; border-color:#D32F2F;}
 .add-prod-btn {
   width:100%;
   padding:14px;
@@ -123,21 +129,23 @@ h2 {
   font-weight:800;
   font-size:13px;
   color:#D32F2F;
-  margin-bottom:6px;
+  margin-bottom:8px;
+}
+.prod-card.input-group {
+  margin-bottom:8px;
+}
+.prod-card.input-group label {
+  font-size:10px;
+  color:#666;
+  font-weight:600;
+  margin-bottom:2px;
 }
 .prod-card input {
-  width:100%;
   padding:8px;
   text-align:center;
   border:1.5px solid #ddd;
   border-radius:6px;
-  margin:4px 0;
   font-size:13px;
-}
-.label {
-  font-size:10px;
-  color:#666;
-  margin-top:2px;
 }
 .save-btn {
   width:100%;
@@ -196,7 +204,7 @@ h2 {
     </div>
   </div>
 
-  <!-- PAGE 2: SELECT CATEGORY - may "All" na -->
+  <!-- PAGE 2: SELECT CATEGORY -->
   <div id="categoryPage" class="page">
     <button class="back-btn" onclick="showPage('mainMenu')">← Back to Menu</button>
     <h2>🛒 Select Category</h2>
@@ -213,19 +221,35 @@ h2 {
     </div>
   </div>
 
-  <!-- PAGE 3: PRODUCT MANAGER - may image + level price -->
+  <!-- PAGE 3: PRODUCT MANAGER -->
   <div id="productPage" class="page">
     <button class="back-btn" onclick="showPage('categoryPage')">← Back to Categories</button>
     <h2 id="catTitle">65's Siomai</h2>
 
-    <!-- Add Product Form -->
+    <!-- Add Product Form - may labels na -->
     <div class="product-form">
       <h4>+ Add Product to <span id="catName">65's Siomai</span></h4>
-      <input type="text" id="prodName" placeholder="Product Name ex: Pork Siomai">
-      <input type="number" id="prodStocks" placeholder="Stocks" value="100">
-      <input type="number" id="prodPrice" placeholder="Selling Price" value="8" step="0.01">
-      <input type="number" id="prodLevelPrice" placeholder="My Level Price / Cost" value="5" step="0.01">
-      <input type="file" id="prodImage" accept="image/*">
+
+      <div class="input-group">
+        <label>Product Name</label>
+        <input type="text" id="prodName" placeholder="ex: Pork Siomai">
+      </div>
+
+      <div class="input-group">
+        <label style="color:#D32F2F;">STOCK</label>
+        <input type="number" id="prodStocks" placeholder="100" value="100">
+      </div>
+
+      <div class="input-group">
+        <label style="color:#1976D2;">PRICE</label>
+        <input type="number" id="prodPrice" placeholder="8" value="8" step="0.01">
+      </div>
+
+      <div class="input-group">
+        <label>Image</label>
+        <input type="file" id="prodImage" accept="image/*">
+      </div>
+
       <button class="add-prod-btn" onclick="addProduct()">Add Product</button>
     </div>
 
@@ -271,7 +295,6 @@ function addProduct() {
   const name = document.getElementById('prodName').value.trim();
   const stocks = parseInt(document.getElementById('prodStocks').value) || 0;
   const price = parseFloat(document.getElementById('prodPrice').value) || 0;
-  const levelPrice = parseFloat(document.getElementById('prodLevelPrice').value) || 0;
   const fileInput = document.getElementById('prodImage');
 
   if(!name || price <= 0) {
@@ -279,31 +302,28 @@ function addProduct() {
     return;
   }
 
-  // Convert image to base64
   if(fileInput.files[0]) {
     const reader = new FileReader();
     reader.onload = function(e) {
-      saveProductData(name, stocks, price, levelPrice, e.target.result);
+      saveProductData(name, stocks, price, e.target.result);
     };
     reader.readAsDataURL(fileInput.files[0]);
   } else {
-    saveProductData(name, stocks, price, levelPrice, '');
+    saveProductData(name, stocks, price, '');
   }
 }
 
-function saveProductData(name, stocks, price, levelPrice, img) {
+function saveProductData(name, stocks, price, img) {
   const newProd = {
     id: Date.now(),
     name,
     stocks,
     price,
-    levelPrice,
     image: img,
-    category: currentCat === 'all'? '65s' : currentCat // pag All, default sa 65s muna
+    category: currentCat === 'all'? '65s' : currentCat
   };
 
   products[currentCat].push(newProd);
-  // Pag di "all", copy din sa "all" para makita lahat
   if(currentCat!== 'all') {
     products['all'].push({...newProd});
   }
@@ -314,7 +334,6 @@ function saveProductData(name, stocks, price, levelPrice, img) {
   document.getElementById('prodName').value = '';
   document.getElementById('prodStocks').value = '100';
   document.getElementById('prodPrice').value = '8';
-  document.getElementById('prodLevelPrice').value = '5';
   document.getElementById('prodImage').value = '';
 
   renderProducts();
@@ -336,12 +355,17 @@ function renderProducts() {
         <button class="delete-btn" onclick="deleteProduct(${prod.id})">×</button>
         ${prod.image? `<img src="${prod.image}" class="prod-img">` : '<div class="prod-img" style="display:flex;align-items:center;justify-content:center;color:#ccc;font-size:11px;">No Image</div>'}
         <div class="prod-name">${prod.name}</div>
-        <input type="number" id="stocks${prod.id}" value="${prod.stocks}" placeholder="Stocks">
-        <div class="label">Stocks</div>
-        <input type="number" id="price${prod.id}" value="${prod.price}" step="0.01" placeholder="Price">
-        <div class="label">Selling Price</div>
-        <input type="number" id="level${prod.id}" value="${prod.levelPrice}" step="0.01" placeholder="Level Price">
-        <div class="label">My Level Price / Cost</div>
+
+        <div class="input-group">
+          <input type="number" id="stocks${prod.id}" value="${prod.stocks}">
+          <label>Stocks</label>
+        </div>
+
+        <div class="input-group">
+          <input type="number" id="price${prod.id}" value="${prod.price}" step="0.01">
+          <label>Price</label>
+        </div>
+
         <button class="save-btn" onclick="saveProduct(${prod.id})">Save Changes</button>
       </div>
     `;
@@ -350,20 +374,16 @@ function renderProducts() {
 }
 
 function saveProduct(prodId) {
-  // Hanapin sa current category
   let prod = products[currentCat].find(p => p.id === prodId);
   if(prod) {
     prod.stocks = parseInt(document.getElementById('stocks' + prodId).value) || 0;
     prod.price = parseFloat(document.getElementById('price' + prodId).value) || 0;
-    prod.levelPrice = parseFloat(document.getElementById('level' + prodId).value) || 0;
   }
 
-  // Update din sa "all" category
   let prodAll = products['all'].find(p => p.id === prodId);
   if(prodAll) {
     prodAll.stocks = prod.stocks;
     prodAll.price = prod.price;
-    prodAll.levelPrice = prod.levelPrice;
   }
 
   localStorage.setItem('products', JSON.stringify(products));
@@ -379,9 +399,7 @@ function saveProduct(prodId) {
 
 function deleteProduct(prodId) {
   if(confirm('Delete this product?')) {
-    // Delete sa current category
     products[currentCat] = products[currentCat].filter(p => p.id!== prodId);
-    // Delete din sa "all"
     products['all'] = products['all'].filter(p => p.id!== prodId);
     localStorage.setItem('products', JSON.stringify(products));
     renderProducts();
