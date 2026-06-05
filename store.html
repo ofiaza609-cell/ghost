@@ -168,6 +168,8 @@ h2 {
   padding:20px;
   width:90%;
   max-width:380px;
+  max-height:90vh;
+  overflow-y:auto;
 }
 .modal-box h3 {
   color:#D32F2F;
@@ -209,6 +211,23 @@ h2 {
   color:#2E7D32;
   margin-top:5px;
 }
+.gcash-proof {
+  margin:12px 0;
+  display:none;
+}
+.gcash-proof label {
+  font-size:12px;
+  color:#007BFF;
+  font-weight:700;
+  display:block;
+  margin-bottom:5px;
+}
+.gcash-proof input {
+  width:100%;
+  padding:8px;
+  border:2px dashed #007BFF;
+  border-radius:8px;
+}
 .payment-btns {
   display:grid;
   grid-template-columns:1fr 1fr;
@@ -237,7 +256,6 @@ h2 {
   font-weight:700;
   cursor:pointer;
 }
-
 .checkout-btn {
   width:100%;
   padding:14px;
@@ -252,6 +270,24 @@ h2 {
 .checkout-btn:disabled {
   background:#ccc;
   cursor:not-allowed;
+}
+
+/* Receipt for Print */
+.receipt {
+  display:none;
+  font-family:monospace;
+  font-size:11px;
+  white-space:pre;
+  line-height:1.4;
+  color:black;
+  background:white;
+  padding:5px;
+  width:80mm;
+}
+@media print {
+  body * {visibility:hidden;}
+ .receipt,.receipt * {visibility:visible;}
+ .receipt {position:absolute; left:0; top:0;}
 }
 </style>
 </head>
@@ -305,24 +341,32 @@ h2 {
       <div class="change" id="change">Change: ₱0</div>
     </div>
 
+    <div class="gcash-proof" id="gcashProof">
+      <label>📱 Gcash Proof of Payment - Upload Screenshot</label>
+      <input type="file" id="proofInput" accept="image/*">
+    </div>
+
     <div class="payment-btns">
       <button class="pay-btn cash-btn" onclick="checkout('Cash')">💵 Cash</button>
-      <button class="pay-btn gcash-btn" onclick="checkout('Gcash')">📱 Gcash</button>
+      <button class="pay-btn gcash-btn" onclick="selectGcash()">📱 Gcash</button>
     </div>
     <button class="cancel-btn" onclick="closePayment()">Cancel</button>
   </div>
 </div>
 
+<!-- Receipt for Print -->
+<div class="receipt" id="receipt"></div>
+
 <script>
 let products = JSON.parse(localStorage.getItem('products') || '{}');
 let cart = [];
 let currentCat = 'all';
+let selectedPayment = 'Cash';
+let gcashProof = '';
 
 function loadProducts() {
   const grid = document.getElementById('prodGrid');
   let prods = products[currentCat] || [];
-
-  // Filter out 0 stocks
   prods = prods.filter(p => p.stocks > 0);
 
   if(prods.length === 0) {
@@ -352,7 +396,6 @@ function filterCat(cat, btn) {
 }
 
 function addToCart(prodId) {
-  // Hanapin product sa all categories
   let prod;
   Object.keys(products).forEach(cat => {
     const p = products[cat].find(x => x.id === prodId);
@@ -423,7 +466,7 @@ function showPayment() {
   cart.forEach(item => {
     html += `
       <div class="review-item">
-        <span>${item.name} x${item.qty}</span>
+        <span>${item.name} x${item.qty} @ ₱${item.price}</span>
         <span>₱${(item.price * item.qty).toFixed(2)}</span>
       </div>
     `;
@@ -433,12 +476,24 @@ function showPayment() {
 
   document.getElementById('cashInput').value = '';
   document.getElementById('change').innerText = 'Change: ₱0';
+  document.getElementById('cashSection').style.display = 'block';
+  document.getElementById('gcashProof').style.display = 'none';
+  selectedPayment = 'Cash';
 
   modal.classList.add('active');
 }
 
+function selectGcash() {
+  selectedPayment = 'Gcash';
+  document.getElementById('cashSection').style.display = 'none';
+  document.getElementById('gcashProof').style.display = 'block';
+  checkout('Gcash');
+}
+
 function closePayment() {
   document.getElementById('paymentModal').classList.remove('active');
+  selectedPayment = 'Cash';
+  gcashProof = '';
 }
 
 function computeChange() {
@@ -460,6 +515,26 @@ function checkout(paymentMethod) {
     }
   }
 
+  if(paymentMethod === 'Gcash') {
+    const fileInput = document.getElementById('proofInput');
+    if(!fileInput.files[0]) {
+      alert('Upload Gcash proof screenshot muna boss!');
+      return;
+    }
+    // Convert proof to base64
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      gcashProof = e.target.result;
+      processCheckout(paymentMethod, total);
+    };
+    reader.readAsDataURL(fileInput.files[0]);
+    return;
+  }
+
+  processCheckout(paymentMethod, total);
+}
+
+function processCheckout(paymentMethod, total) {
   // AUTO BAWAS STOCK
   cart.forEach(cartItem => {
     Object.keys(products).forEach(cat => {
@@ -471,26 +546,74 @@ function checkout(paymentMethod) {
     });
   });
 
-  // Save updated stocks
   localStorage.setItem('products', JSON.stringify(products));
 
-  // Save sale history
+  // Save sale with proof
   const sales = JSON.parse(localStorage.getItem('sales') || '[]');
   sales.push({
     datetime: new Date().toISOString(),
     items: [...cart],
     total: total,
-    payment: paymentMethod
+    payment: paymentMethod,
+    proof: gcashProof
   });
   localStorage.setItem('sales', JSON.stringify(sales));
 
+  // Generate receipt
+  generateReceipt(paymentMethod, total);
+
+  // Print receipt
+  printReceipt();
+
   alert(`✓ SALE COMPLETE\nPayment: ${paymentMethod}\nTotal: ₱${total.toFixed(2)}`);
 
-  // Clear cart
+  // Clear
   cart = [];
   renderCart();
   closePayment();
-  loadProducts(); // Refresh para updated stocks
+  loadProducts();
+}
+
+function generateReceipt(paymentMethod, total) {
+  const now = new Date();
+  let receiptText = '================================\n';
+  receiptText += ' SIOMAI FACTORY\n';
+  receiptText += ' 123 Main St, QC\n';
+  receiptText += ' Tel: 0917-XXX-XXXX\n';
+  receiptText += ' ' + now.toLocaleString('en-PH') + '\n';
+  receiptText += ' Cashier: ADMIN\n';
+  receiptText += '================================\n\n';
+
+  // BREAKDOWN WITH DESCRIPTION
+  cart.forEach(item => {
+    receiptText += `${item.name}\n`;
+    receiptText += `${item.qty} x ₱${item.price} = ₱${(item.price * item.qty).toFixed(2)}\n\n`;
+  });
+
+  receiptText += '--------------------------------\n';
+  receiptText += `SUBTOTAL: ₱${total.toFixed(2)}\n`;
+  receiptText += `TOTAL: ₱${total.toFixed(2)}\n`;
+  receiptText += `PAYMENT: ${paymentMethod}\n`;
+
+  if(paymentMethod === 'Cash') {
+    const cash = parseFloat(document.getElementById('cashInput').value) || 0;
+    receiptText += `CASH: ₱${cash.toFixed(2)}\n`;
+    receiptText += `CHANGE: ₱${(cash - total).toFixed(2)}\n`;
+  } else {
+    receiptText += `GCASH PROOF: UPLOADED ✓\n`;
+  }
+
+  receiptText += '================================\n';
+  receiptText += ' Thank you! Come again! 🙏\n';
+  receiptText += '================================\n';
+
+  document.getElementById('receipt').innerText = receiptText;
+}
+
+function printReceipt() {
+  document.getElementById('receipt').style.display = 'block';
+  window.print();
+  document.getElementById('receipt').style.display = 'none';
 }
 
 // Initial load
