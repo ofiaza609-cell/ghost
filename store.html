@@ -312,24 +312,30 @@ h2 {
 .receipt {
   display:none;
   font-family:monospace;
-  font-size:11px;
+  font-size:14px;
   color:black;
   background:white;
-  padding:5px;
-  width:80mm;
-  line-height:1.4;
+  padding:10px;
+  width:100%;
+  max-width:300px;
+  margin:auto;
+  line-height:1.6;
+  text-align:left;
 }
 @media print {
+  @page {size: 80mm auto; margin: 0;}
   body * {visibility:hidden;}
  .receipt,.receipt * {visibility:visible;}
  .receipt {
     position:absolute;
     left:0;
     top:0;
-    width:100%;
+    width:80mm;
     display:block!important;
+    font-size:12px;
   }
 }
+
 </style>
 </head>
 <body>
@@ -654,33 +660,60 @@ function processCheckout(paymentMethod, total) {
 function generateReceipt(paymentMethod, total) {
   const now = new Date();
   let receiptHTML = `
-    <div style="text-align:center; font-weight:800;">================================</div>
-    <div style="text-align:center; font-weight:800;">SIOMAI FACTORY</div>
-    <div style="text-align:center;">123 Main St, QC</div>
-    <div style="text-align:center;">Tel: 0917-XXX-XXXX</div>
-    <div style="text-align:center;">${now.toLocaleString('en-PH')}</div>
-    <div style="text-align:center;">Cashier: ADMIN</div>
-    <div style="text-align:center; font-weight:800;">================================</div>
-    <br>
+    <div style="text-align:center; font-weight:bold; border-bottom:1px dashed #000; padding-bottom:5px; margin-bottom:5px;">
+      SIOMAI FACTORY<br>
+      123 Main St, QC<br>
+      Tel: 0917-XXX-XXXX<br>
+      ${now.toLocaleString('en-PH')}<br>
+      Cashier: ADMIN
+    </div>
   `;
 
   cart.forEach(item => {
-    receiptHTML += `<div>${item.name}</div>`;
-    receiptHTML += `<div>${item.qty} x ₱${item.price} = ₱${(item.price * item.qty).toFixed(2)}</div><br>`;
+    receiptHTML += `
+      <div style="margin-top:5px;">
+        <div style="font-weight:bold;">${item.name}</div>
+        <div style="display:flex; justify-content:space-between;">
+          <span>${item.qty} x ₱${item.price}</span>
+          <span>₱${(item.price * item.qty).toFixed(2)}</span>
+        </div>
+      </div>
+    `;
   });
 
-  receiptHTML += `<div>--------------------------------</div>`;
-  receiptHTML += `<div style="text-align:right;">SUBTOTAL: ₱${total.toFixed(2)}</div>`;
-  receiptHTML += `<div style="text-align:right; font-weight:800; font-size:14px;">TOTAL: ₱${total.toFixed(2)}</div>`;
-  receiptHTML += `<div>PAYMENT: ${paymentMethod}</div>`;
+  receiptHTML += `
+    <div style="border-top:1px dashed #000; margin-top:8px; padding-top:5px;">
+      <div style="display:flex; justify-content:space-between;">
+        <span>SUBTOTAL:</span>
+        <span>₱${total.toFixed(2)}</span>
+      </div>
+      <div style="display:flex; justify-content:space-between; font-weight:bold; font-size:16px;">
+        <span>TOTAL:</span>
+        <span>₱${total.toFixed(2)}</span>
+      </div>
+      <div>PAYMENT: ${paymentMethod}</div>
+  `;
 
   if(paymentMethod === 'Cash') {
     const cash = parseFloat(document.getElementById('cashInput').value) || 0;
-    receiptHTML += `<div>CASH: ₱${cash.toFixed(2)}</div>`;
-    receiptHTML += `<div>CHANGE: ₱${(cash - total).toFixed(2)}</div>`;
+    receiptHTML += `
+      <div>CASH: ₱${cash.toFixed(2)}</div>
+      <div>CHANGE: ₱${(cash - total).toFixed(2)}</div>
+    `;
   } else {
     receiptHTML += `<div>GCASH PROOF: UPLOADED ✓</div>`;
   }
+
+  receiptHTML += `
+    </div>
+    <div style="text-align:center; border-top:1px dashed #000; margin-top:8px; padding-top:8px; font-weight:bold;">
+      Thank you! Come again! 🙏
+    </div>
+  `;
+
+  document.getElementById('receipt').innerHTML = receiptHTML;
+  document.getElementById('receipt').style.display = 'block';
+}
 
   receiptHTML += `<div style="text-align:center; font-weight:800;">================================</div>`;
   receiptHTML += `<div style="text-align:center; font-weight:800;">Thank you! Come again! 🙏</div>`;
