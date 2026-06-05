@@ -32,7 +32,6 @@ h2 {
   margin-bottom:12px;
   font-size:12px;
 }
-
 .cat-grid {
   display:grid;
   grid-template-columns:repeat(3, 1fr);
@@ -50,7 +49,6 @@ h2 {
   cursor:pointer;
 }
 .cat-btn.active {background:#D32F2F; color:white;}
-
 .prod-grid {
   display:grid;
   grid-template-columns:repeat(2, 1fr);
@@ -90,7 +88,6 @@ h2 {
   font-size:10px;
   color:#666;
 }
-
 .cart-float {
   position:fixed;
   bottom:0;
@@ -187,7 +184,6 @@ h2 {
   text-align:right;
   margin:8px 0;
 }
-
 .modal {
   display:none;
   position:fixed;
@@ -325,8 +321,8 @@ h2 {
 @media print {
   @page {size: 80mm auto; margin: 0;}
   body * {visibility:hidden;}
- .receipt,.receipt * {visibility:visible;}
- .receipt {
+.receipt,.receipt * {visibility:visible;}
+.receipt {
     position:absolute;
     left:0;
     top:0;
@@ -335,7 +331,6 @@ h2 {
     font-size:12px;
   }
 }
-
 </style>
 </head>
 <body>
@@ -710,14 +705,6 @@ function generateReceipt(paymentMethod, total) {
       Thank you! Come again! 🙏
     </div>
   `;
-
-  document.getElementById('receipt').innerHTML = receiptHTML;
-  document.getElementById('receipt').style.display = 'block';
-}
-
-  receiptHTML += `<div style="text-align:center; font-weight:800;">================================</div>`;
-  receiptHTML += `<div style="text-align:center; font-weight:800;">Thank you! Come again! 🙏</div>`;
-  receiptHTML += `<div style="text-align:center; font-weight:800;">================================</div>`;
 
   document.getElementById('receipt').innerHTML = receiptHTML;
   document.getElementById('receipt').style.display = 'block';
