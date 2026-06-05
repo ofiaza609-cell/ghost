@@ -58,7 +58,7 @@ h2 {
   display:grid;
   grid-template-columns:repeat(2, 1fr);
   gap:8px;
-  margin-bottom:80px;
+  margin-bottom:90px;
 }
 .prod-card {
   background:#FFFDF7;
@@ -107,6 +107,7 @@ h2 {
   box-shadow:0 -4px 15px rgba(0,0,0,0.2);
   max-width:500px;
   margin:auto;
+  z-index:999;
 }
 .cart-header {
   display:flex;
@@ -132,17 +133,57 @@ h2 {
   font-weight:800;
 }
 .cart-items {
-  max-height:150px;
+  max-height:180px;
   overflow-y:auto;
   margin-bottom:8px;
 }
 .cart-item {
-  display:flex;
-  justify-content:space-between;
+  display:grid;
+  grid-template-columns:20px 1fr 80px 60px;
+  gap:5px;
+  align-items:center;
   font-size:12px;
-  padding:4px 0;
+  padding:6px 0;
   border-bottom:1px dashed #eee;
 }
+.remove-btn {
+  background:#C62828;
+  color:white;
+  border:none;
+  border-radius:50%;
+  width:18px;
+  height:18px;
+  font-size:14px;
+  line-height:1;
+  cursor:pointer;
+  font-weight:800;
+}
+.qty-control {
+  display:flex;
+  gap:3px;
+  align-items:center;
+}
+.qty-btn {
+  width:24px;
+  height:24px;
+  border:none;
+  background:#D32F2F;
+  color:white;
+  border-radius:4px;
+  font-weight:800;
+  cursor:pointer;
+  font-size:14px;
+}
+.qty-input {
+  width:40px;
+  height:24px;
+  text-align:center;
+  border:1px solid #ddd;
+  border-radius:4px;
+  font-size:12px;
+}
+.item-name {font-size:11px; overflow:hidden;}
+.item-total {text-align:right; font-weight:700; color:#2E7D32;}
 .cart-total {
   font-size:20px;
   font-weight:900;
@@ -272,22 +313,30 @@ h2 {
   cursor:not-allowed;
 }
 
-/* Receipt for Print */
+/* Receipt for Print - FIXED */
 .receipt {
-  display:none;
+  display:block;
+  position:absolute;
+  left:-9999px;
+  top:-9999px;
   font-family:monospace;
-  font-size:11px;
+  font-size:12px;
   white-space:pre;
-  line-height:1.4;
+  line-height:1.5;
   color:black;
   background:white;
-  padding:5px;
+  padding:10px;
   width:80mm;
 }
 @media print {
   body * {visibility:hidden;}
- .receipt,.receipt * {visibility:visible;}
- .receipt {position:absolute; left:0; top:0;}
+.receipt,.receipt * {visibility:visible;}
+.receipt {
+    position:absolute;
+    left:0;
+    top:0;
+    width:100%;
+  }
 }
 </style>
 </head>
@@ -441,8 +490,15 @@ function renderCart() {
       count += item.qty;
       html += `
         <div class="cart-item">
-          <span>${item.name} x${item.qty}</span>
-          <span>₱${subtotal.toFixed(2)}</span>
+          <button class="remove-btn" onclick="removeItem(${i})">×</button>
+          <span class="item-name">${item.name}</span>
+          <div class="qty-control">
+            <button class="qty-btn" onclick="changeQty(${i}, -1)">-</button>
+            <input type="number" class="qty-input" value="${item.qty}" min="1"
+                   oninput="setQty(${i}, this.value)">
+            <button class="qty-btn" onclick="changeQty(${i}, 1)">+</button>
+          </div>
+          <span class="item-total">₱${subtotal.toFixed(2)}</span>
         </div>
       `;
     });
@@ -452,6 +508,45 @@ function renderCart() {
 
   cartCount.innerText = count;
   cartTotal.innerText = 'Total: ₱' + total.toFixed(2);
+}
+
+function removeItem(index) {
+  cart.splice(index, 1);
+  renderCart();
+}
+
+function changeQty(index, delta) {
+  cart[index].qty += delta;
+
+  let prod;
+  Object.keys(products).forEach(cat => {
+    const p = products[cat].find(x => x.id === cart[index].id);
+    if(p) prod = p;
+  });
+
+  if(cart[index].qty < 1) cart[index].qty = 1;
+  if(prod && cart[index].qty > prod.stocks) cart[index].qty = prod.stocks;
+
+  renderCart();
+}
+
+function setQty(index, value) {
+  let qty = parseInt(value) || 1;
+
+  let prod;
+  Object.keys(products).forEach(cat => {
+    const p = products[cat].find(x => x.id === cart[index].id);
+    if(p) prod = p;
+  });
+
+  if(qty < 1) qty = 1;
+  if(prod && qty > prod.stocks) {
+    qty = prod.stocks;
+    alert('Max stock: ' + prod.stocks + ' lang boss!');
+  }
+
+  cart[index].qty = qty;
+  renderCart();
 }
 
 function showPayment() {
@@ -479,6 +574,7 @@ function showPayment() {
   document.getElementById('cashSection').style.display = 'block';
   document.getElementById('gcashProof').style.display = 'none';
   selectedPayment = 'Cash';
+  document.getElementById('proofInput').value = '';
 
   modal.classList.add('active');
 }
@@ -521,7 +617,6 @@ function checkout(paymentMethod) {
       alert('Upload Gcash proof screenshot muna boss!');
       return;
     }
-    // Convert proof to base64
     const reader = new FileReader();
     reader.onload = function(e) {
       gcashProof = e.target.result;
@@ -535,7 +630,6 @@ function checkout(paymentMethod) {
 }
 
 function processCheckout(paymentMethod, total) {
-  // AUTO BAWAS STOCK
   cart.forEach(cartItem => {
     Object.keys(products).forEach(cat => {
       const prod = products[cat].find(p => p.id === cartItem.id);
@@ -548,7 +642,6 @@ function processCheckout(paymentMethod, total) {
 
   localStorage.setItem('products', JSON.stringify(products));
 
-  // Save sale with proof
   const sales = JSON.parse(localStorage.getItem('sales') || '[]');
   sales.push({
     datetime: new Date().toISOString(),
@@ -559,15 +652,11 @@ function processCheckout(paymentMethod, total) {
   });
   localStorage.setItem('sales', JSON.stringify(sales));
 
-  // Generate receipt
   generateReceipt(paymentMethod, total);
-
-  // Print receipt
   printReceipt();
 
   alert(`✓ SALE COMPLETE\nPayment: ${paymentMethod}\nTotal: ₱${total.toFixed(2)}`);
 
-  // Clear
   cart = [];
   renderCart();
   closePayment();
@@ -580,11 +669,10 @@ function generateReceipt(paymentMethod, total) {
   receiptText += ' SIOMAI FACTORY\n';
   receiptText += ' 123 Main St, QC\n';
   receiptText += ' Tel: 0917-XXX-XXXX\n';
-  receiptText += ' ' + now.toLocaleString('en-PH') + '\n';
+  receiptText += now.toLocaleString('en-PH') + '\n';
   receiptText += ' Cashier: ADMIN\n';
   receiptText += '================================\n\n';
 
-  // BREAKDOWN WITH DESCRIPTION
   cart.forEach(item => {
     receiptText += `${item.name}\n`;
     receiptText += `${item.qty} x ₱${item.price} = ₱${(item.price * item.qty).toFixed(2)}\n\n`;
@@ -611,12 +699,19 @@ function generateReceipt(paymentMethod, total) {
 }
 
 function printReceipt() {
-  document.getElementById('receipt').style.display = 'block';
-  window.print();
-  document.getElementById('receipt').style.display = 'none';
+  document.getElementById('receipt').style.left = '-9999px';
+  document.getElementById('receipt').style.top = '-9999px';
+
+  setTimeout(() => {
+    window.print();
+    setTimeout(() => {
+      document.getElementById('receipt').style.left = '0';
+      document.getElementById('receipt').style.top = '0';
+      document.getElementById('receipt').style.display = 'none';
+    }, 500);
+  }, 200);
 }
 
-// Initial load
 loadProducts();
 </script>
 </body>
