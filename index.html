@@ -3,323 +3,295 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Siomai Factory System</title>
+<title>Siomai Factory POS - Categories</title>
 <style>
 * {margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI', sans-serif;}
-body {background:linear-gradient(135deg, #FFF8E1 0%, #FFE0B2 100%); min-height:100vh; padding:15px;}
-.container {max-width:500px; margin:auto;}
+body {background:#FFF8E1; padding:10px;}
+.container {max-width:500px; margin:auto; background:white; border-radius:16px; padding:15px; box-shadow:0 4px 15px rgba(0,0,0,0.1); border-top:5px solid #D32F2F;}
+h2 {color:#D32F2F; text-align:center; margin-bottom:12px;}
+.back-btn {background:#757575; color:white; border:none; padding:8px 15px; border-radius:6px; cursor:pointer; margin-bottom:10px; font-size:12px;}
 
-/* LOGIN */
-.login-box {
-  background:white;
-  border-radius:18px;
-  padding:30px;
-  margin-top:80px;
-  box-shadow:0 6px 20px rgba(0,0,0,0.15);
-  border-top:6px solid #D32F2F;
-}
-.login-box h2 {color:#D32F2F; text-align:center; margin-bottom:20px;}
-.login-box input {
-  width:100%;
-  padding:12px;
-  margin:10px 0;
-  border:2px solid #FFE0B2;
-  border-radius:10px;
-  font-size:15px;
-}
-.login-btn {
-  width:100%;
-  padding:14px;
-  background:linear-gradient(135deg, #D32F2F, #B71C1C);
-  color:white;
-  border:none;
-  border-radius:10px;
-  font-size:16px;
-  font-weight:700;
-  cursor:pointer;
-  margin-top:15px;
-}
-
-/* DASHBOARD */
-.dashboard {display:none;}
-.card {
-  background:white;
-  border-radius:18px;
-  padding:20px;
-  margin-bottom:15px;
-  box-shadow:0 4px 15px rgba(0,0,0,0.1);
-  border-top:5px solid #D32F2F;
-}
-.card h3 {color:#D32F2F; margin-bottom:15px; font-size:18px;}
-.menu-grid {
+.cat-grid {
   display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:10px;
+  grid-template-columns:repeat(2, 1fr);
+  gap:8px;
+  margin-bottom:15px;
 }
-.menu-btn {
-  padding:18px 10px;
+.cat-btn {
+  padding:20px 10px;
   border:none;
   border-radius:12px;
-  background:linear-gradient(135deg, #FFE0B2, #FFCC80);
+  background:linear-gradient(135deg, #FFCC80, #FFB74D);
   color:#B71C1C;
-  font-weight:700;
+  font-weight:800;
   font-size:14px;
   cursor:pointer;
-  text-align:center;
 }
-.menu-btn:active {transform:scale(0.95);}
-.logout-btn {
-  background:#757575;
-  color:white;
-  padding:12px;
-  border:none;
-  border-radius:10px;
-  width:100%;
-  font-weight:600;
-  cursor:pointer;
-  margin-top:10px;
-}
+.cat-btn:active {transform:scale(0.95);}
 
-/* POS & FORMS */
-.section {display:none;}
-input, select, textarea {
-  width:100%;
-  padding:11px;
-  margin:8px 0;
-  border:2px solid #FFE0B2;
-  border-radius:10px;
-  font-size:14px;
-}
-.btn {
-  padding:12px;
-  border:none;
-  border-radius:10px;
-  font-weight:700;
-  cursor:pointer;
-  margin-top:8px;
-}
-.btn-primary {background:#2E7D32; color:white; width:100%;}
-.btn-back {background:#1976D2; color:white; width:100%; margin-bottom:10px;}
-.cart {
+.product-form {
+  background:#FFF8E1;
   border:2px dashed #FFCC80;
   border-radius:10px;
   padding:12px;
-  min-height:120px;
-  background:#fffdf7;
-  margin:10px 0;
+  margin-bottom:10px;
+}
+.product-form input {
+  width:100%;
+  padding:8px;
+  margin:4px 0;
+  border:2px solid #FFE0B2;
+  border-radius:6px;
+  font-size:13px;
+}
+.add-prod-btn {
+  width:100%;
+  padding:10px;
+  background:#2E7D32;
+  color:white;
+  border:none;
+  border-radius:6px;
+  font-weight:700;
+  cursor:pointer;
+  margin-top:5px;
+}
+
+.prod-list {
+  display:grid;
+  grid-template-columns:repeat(2, 1fr);
+  gap:6px;
+  margin-bottom:15px;
+}
+.prod-card {
+  background:white;
+  border:2px solid #FFCC80;
+  border-radius:10px;
+  padding:8px;
+  text-align:center;
+}
+.prod-name {font-weight:700; font-size:12px; color:#D32F2F; margin-bottom:4px;}
+.prod-info {font-size:11px; color:#666; margin:2px 0;}
+.prod-card input {
+  width:50px;
+  padding:4px;
+  text-align:center;
+  border:1px solid #ddd;
+  border-radius:4px;
+  margin:4px 0;
+  font-size:12px;
+}
+.add-cart-btn {
+  width:100%;
+  padding:6px;
+  background:#D32F2F;
+  color:white;
+  border:none;
+  border-radius:6px;
+  font-size:11px;
+  font-weight:700;
+  cursor:pointer;
+}
+
+.cart {
+  background:#FFF8E1;
+  border-radius:8px;
+  padding:10px;
+  min-height:100px;
+  margin-bottom:10px;
 }
 .cart-item {
   display:flex;
   justify-content:space-between;
-  padding:6px 0;
+  font-size:13px;
+  padding:4px 0;
   border-bottom:1px dashed #ddd;
-  font-size:14px;
 }
 .total {
   font-size:22px;
-  font-weight:800;
+  font-weight:900;
   color:#D32F2F;
   text-align:right;
-  padding:10px 0;
-  border-top:3px solid #D32F2F;
+  margin:10px 0;
 }
-.welcome {text-align:center; color:#2E7D32; font-weight:600; margin-bottom:15px;}
+.btn-group {display:flex; gap:6px;}
+.btn {
+  flex:1;
+  padding:14px;
+  border:none;
+  border-radius:8px;
+  font-weight:800;
+  cursor:pointer;
+}
+.checkout {background:#4CAF50; color:white;}
+.clear {background:#f44336; color:white;}
 </style>
 </head>
 <body>
 
 <div class="container">
+  <div id="mainMenu">
+    <h2>📋 Main Menu</h2>
+    <p style="text-align:center; color:#666; font-size:12px; margin-bottom:12px;">Welcome to my POS, admin!</p>
 
-<!-- LOGIN SCREEN -->
-<div id="loginScreen" class="login-box">
-  <h2>🔐 Siomai Factory System</h2>
-  <input type="text" id="username" placeholder="Username" value="admin">
-  <input type="password" id="password" placeholder="Password" value="1234">
-  <button class="login-btn" onclick="login()">LOGIN</button>
-  <p style="text-align:center; font-size:12px; color:#666; margin-top:10px;">Default: admin / 1234</p>
-</div>
-
-<!-- DASHBOARD -->
-<div id="dashboard" class="dashboard">
-  <div class="welcome" id="welcomeText"></div>
-
-  <div class="card">
-    <h3>📋 Main Menu</h3>
-    <div class="menu-grid">
-      <button class="menu-btn" onclick="showSection('pos')">🛒 Products<br>POS Sales</button>
-      <button class="menu-btn" onclick="showSection('production')">📦 Daily<br>Production</button>
-      <button class="menu-btn" onclick="showSection('expenses')">💸 Daily<br>Expenses</button>
-      <button class="menu-btn" onclick="showSection('income')">💰 Daily<br>Income</button>
-      <button class="menu-btn" onclick="showSection('monthly')">📊 Monthly<br>Expenses</button>
-      <button class="menu-btn" onclick="showSection('net')">📈 Net<br>Profit</button>
+    <div class="cat-grid">
+      <button class="cat-btn" onclick="showPOS()">🛒 Products<br>POS Sales</button>
+      <button class="cat-btn">📦 Daily<br>Production</button>
+      <button class="cat-btn">💸 Daily<br>Expenses</button>
+      <button class="cat-btn">💰 Daily<br>Income</button>
+      <button class="cat-btn">📊 Monthly<br>Expenses</button>
+      <button class="cat-btn">📈 Net<br>Profit</button>
     </div>
-    <button class="logout-btn" onclick="logout()">Logout</button>
   </div>
-</div>
 
-<!-- POS SECTION -->
-<div id="pos" class="section">
-  <div class="card">
-    <button class="btn btn-back" onclick="backToDashboard()">← Back to Menu</button>
-    <h3>🛒 POS Sales</h3>
-    <div class="menu-grid">
-      <button class="menu-btn" onclick="addItem('Pork Siomai', 8)">Pork Siomai<br>₱8</button>
-      <button class="menu-btn" onclick="addItem('Beef Siomai', 8)">Beef Siomai<br>₱8</button>
-      <button class="menu-btn" onclick="addItem('Chicken Siomai', 8)">Chicken Siomai<br>₱8</button>
-      <button class="menu-btn" onclick="addItem('Japanese', 10)">Japanese<br>₱10</button>
-      <button class="menu-btn" onclick="addItem('Siopao Asado', 25)">Siopao Asado<br>₱25</button>
-      <button class="menu-btn" onclick="addItem('Siopao Bola', 25)">Siopao Bola<br>₱25</button>
-      <button class="menu-btn" onclick="addItem('Rice', 15)">Rice<br>₱15</button>
-      <button class="menu-btn" onclick="addItem('Softdrinks', 20)">Softdrinks<br>₱20</button>
+  <div id="posPage" style="display:none;">
+    <button class="back-btn" onclick="backToMenu()">← Back to Menu</button>
+    <h2>🛒 Select Category</h2>
+
+    <div class="cat-grid">
+      <button class="cat-btn" onclick="openCategory('65s')">65's</button>
+      <button class="cat-btn" onclick="openCategory('30s')">30's</button>
+      <button class="cat-btn" onclick="openCategory('big')">Big SIOMAI</button>
+      <button class="cat-btn" onclick="openCategory('dumplings')">Dumplings</button>
+      <button class="cat-btn" onclick="openCategory('siopao')">SIOPAO</button>
+      <button class="cat-btn" onclick="openCategory('sauce')">Sauce</button>
+      <button class="cat-btn" onclick="openCategory('others')">Others</button>
     </div>
-    <div class="cart" id="cart"><p style="text-align:center; color:#999;">No items yet</p></div>
+  </div>
+
+  <div id="categoryPage" style="display:none;">
+    <button class="back-btn" onclick="backToCategories()">← Back to Categories</button>
+    <h2 id="catTitle"></h2>
+
+    <!-- Add Product Form -->
+    <div class="product-form">
+      <h4 style="color:#D32F2F; margin-bottom:5px;">+ Add Product to <span id="catName"></span></h4>
+      <input type="text" id="prodName" placeholder="Product Name ex: Pork Siomai">
+      <input type="number" id="prodStocks" placeholder="Number of Stocks" value="100">
+      <input type="number" id="prodPrice" placeholder="Price" value="8" step="0.01">
+      <button class="add-prod-btn" onclick="addProduct()">Add Product</button>
+    </div>
+
+    <!-- Product List -->
+    <div class="prod-list" id="prodList"></div>
+
+    <!-- Cart -->
+    <div class="cart" id="cart">
+      <p style="text-align:center; color:#999; font-size:12px;">No items in cart</p>
+    </div>
     <div class="total" id="total">Total: ₱0</div>
-    <button class="btn btn-primary" onclick="saveSale()">Save Sale + Print</button>
-  </div>
-</div>
 
-<!-- DAILY PRODUCTION -->
-<div id="production" class="section">
-  <div class="card">
-    <button class="btn btn-back" onclick="backToDashboard()">← Back to Menu</button>
-    <h3>📦 Daily Production</h3>
-    <label>Date:</label>
-    <input type="date" id="prodDate">
-    <label>Pork Siomai pcs:</label>
-    <input type="number" id="prodPork" value="0">
-    <label>Beef Siomai pcs:</label>
-    <input type="number" id="prodBeef" value="0">
-    <label>Chicken Siomai pcs:</label>
-    <input type="number" id="prodChicken" value="0">
-    <label>Siopao Asado pcs:</label>
-    <input type="number" id="prodAsado" value="0">
-    <label>Siopao Bola pcs:</label>
-    <input type="number" id="prodBola" value="0">
-    <label>Notes:</label>
-    <textarea id="prodNotes" rows="2"></textarea>
-    <button class="btn btn-primary" onclick="saveProduction()">Save Production</button>
-  </div>
-</div>
-
-<!-- DAILY EXPENSES -->
-<div id="expenses" class="section">
-  <div class="card">
-    <button class="btn btn-back" onclick="backToDashboard()">← Back to Menu</button>
-    <h3>💸 Daily Expenses</h3>
-    <label>Date:</label>
-    <input type="date" id="expDate">
-    <label>Meat/Pork:</label>
-    <input type="number" id="expMeat" value="0">
-    <label>Wrapper:</label>
-    <input type="number" id="expWrapper" value="0">
-    <label>Gas/Electric:</label>
-    <input type="number" id="expGas" value="0">
-    <label>Labor:</label>
-    <input type="number" id="expLabor" value="0">
-    <label>Others:</label>
-    <input type="number" id="expOthers" value="0">
-    <button class="btn btn-primary" onclick="saveExpenses()">Save Expenses</button>
-  </div>
-</div>
-
-<!-- DAILY INCOME -->
-<div id="income" class="section">
-  <div class="card">
-    <button class="btn btn-back" onclick="backToDashboard()">← Back to Menu</button>
-    <h3>💰 Daily Income Summary</h3>
-    <label>Date:</label>
-    <input type="date" id="incDate">
-    <div id="incSummary" style="background:#FFF8E1; padding:12px; border-radius:8px; margin:10px 0;">
-      Select date to view sales + production total
+    <div class="btn-group">
+      <button class="btn checkout" onclick="checkout()">✓ CHECKOUT</button>
+      <button class="btn clear" onclick="clearCart()">🗑️ CLEAR</button>
     </div>
-    <button class="btn btn-primary" onclick="computeIncome()">Compute Daily Income</button>
   </div>
-</div>
-
-<!-- MONTHLY EXPENSES -->
-<div id="monthly" class="section">
-  <div class="card">
-    <button class="btn btn-back" onclick="backToDashboard()">← Back to Menu</button>
-    <h3>📊 Monthly Expenses</h3>
-    <label>Month:</label>
-    <input type="month" id="monthPick">
-    <label>Rent:</label>
-    <input type="number" id="monRent" value="0">
-    <label>Electric Bill:</label>
-    <input type="number" id="monElectric" value="0">
-    <label>Water:</label>
-    <input type="number" id="monWater" value="0">
-    <label>Internet:</label>
-    <input type="number" id="monInternet" value="0">
-    <button class="btn btn-primary" onclick="saveMonthly()">Save Monthly</button>
-  </div>
-</div>
-
-<!-- NET PROFIT -->
-<div id="net" class="section">
-  <div class="card">
-    <button class="btn btn-back" onclick="backToDashboard()">← Back to Menu</button>
-    <h3>📈 Net Profit Calculator</h3>
-    <label>Select Month:</label>
-    <input type="month" id="netMonth">
-    <div id="netResult" style="background:#FFF8E1; padding:15px; border-radius:8px; margin:10px 0; line-height:1.8;">
-      Click Compute to see Net Profit
-    </div>
-    <button class="btn btn-primary" onclick="computeNet()">Compute Net Profit</button>
-  </div>
-</div>
-
 </div>
 
 <script>
+let currentCat = '';
+let products = JSON.parse(localStorage.getItem('products') || '{}');
 let cart = [];
-let currentUser = '';
 
-// LOGIN
-function login() {
-  const user = document.getElementById('username').value;
-  const pass = document.getElementById('password').value;
+// Init categories
+['65s','30s','big','dumplings','siopao','sauce','others'].forEach(cat => {
+  if(!products[cat]) products[cat] = [];
+});
 
-  if(user === 'admin' && pass === '1234') {
-    currentUser = user;
-    document.getElementById('loginScreen').style.display = 'none';
-    document.getElementById('dashboard').style.display = 'block';
-    document.getElementById('welcomeText').innerText = 'Welcome to my POS, ' + user + '!';
+function showPOS() {
+  document.getElementById('mainMenu').style.display = 'none';
+  document.getElementById('posPage').style.display = 'block';
+}
 
-    // Set today's date
-    const today = new Date().toISOString().split('T')[0];
-    document.getElementById('prodDate').value = today;
-    document.getElementById('expDate').value = today;
-    document.getElementById('incDate').value = today;
-    document.getElementById('monthPick').value = today.substring(0,7);
-    document.getElementById('netMonth').value = today.substring(0,7);
-  } else {
-    alert('Maling username/password boss! Default: admin / 1234');
+function backToMenu() {
+  document.getElementById('posPage').style.display = 'none';
+  document.getElementById('mainMenu').style.display = 'block';
+}
+
+function openCategory(cat) {
+  currentCat = cat;
+  document.getElementById('posPage').style.display = 'none';
+  document.getElementById('categoryPage').style.display = 'block';
+
+  const catNames = {
+    '65s': "65's Siomai",
+    '30s': "30's Siomai",
+    'big': 'Big Siomai',
+    'dumplings': 'Dumplings',
+    'siopao': 'Siopao',
+    'sauce': 'Sauce',
+    'others': 'Others'
+  };
+
+  document.getElementById('catTitle').innerText = catNames[cat];
+  document.getElementById('catName').innerText = catNames[cat];
+  renderProducts();
+}
+
+function backToCategories() {
+  document.getElementById('categoryPage').style.display = 'none';
+  document.getElementById('posPage').style.display = 'block';
+}
+
+function addProduct() {
+  const name = document.getElementById('prodName').value.trim();
+  const stocks = parseInt(document.getElementById('prodStocks').value) || 0;
+  const price = parseFloat(document.getElementById('prodPrice').value) || 0;
+
+  if(!name || price <= 0) {
+    alert('Lagay ka name at price boss!');
+    return;
   }
+
+  products[currentCat].push({id: Date.now(), name, stocks, price});
+  localStorage.setItem('products', JSON.stringify(products));
+
+  document.getElementById('prodName').value = '';
+  document.getElementById('prodStocks').value = '100';
+  document.getElementById('prodPrice').value = '8';
+
+  renderProducts();
 }
 
-function logout() {
-  document.getElementById('dashboard').style.display = 'none';
-  document.getElementById('loginScreen').style.display = 'block';
-  document.getElementById('password').value = '';
+function renderProducts() {
+  const list = document.getElementById('prodList');
+  const prods = products[currentCat];
+
+  if(prods.length === 0) {
+    list.innerHTML = '<p style="grid-column:span 2; text-align:center; color:#999; padding:20px;">No products yet. Add muna boss!</p>';
+    return;
+  }
+
+  let html = '';
+  prods.forEach(prod => {
+    html += `
+      <div class="prod-card">
+        <div class="prod-name">${prod.name}</div>
+        <div class="prod-info">Stocks: ${prod.stocks}</div>
+        <div class="prod-info">Price: ₱${prod.price}</div>
+        <input type="number" id="qty${prod.id}" value="1" min="1" max="${prod.stocks}">
+        <button class="add-cart-btn" onclick="addToCart(${prod.id})">Add to Cart</button>
+      </div>
+    `;
+  });
+  list.innerHTML = html;
 }
 
-// NAVIGATION
-function showSection(id) {
-  document.getElementById('dashboard').style.display = 'none';
-  document.getElementById(id).style.display = 'block';
-}
+function addToCart(prodId) {
+  const prod = products[currentCat].find(p => p.id === prodId);
+  const qty = parseInt(document.getElementById('qty' + prodId).value) || 1;
 
-function backToDashboard() {
-  document.querySelectorAll('.section').forEach(s => s.style.display = 'none');
-  document.getElementById('dashboard').style.display = 'block';
-}
+  if(qty > prod.stocks) {
+    alert('Kulang stocks boss!');
+    return;
+  }
 
-// POS FUNCTIONS
-function addItem(name, price) {
-  const existing = cart.find(item => item.name === name);
-  if(existing) existing.qty++;
-  else cart.push({name, price, qty:1});
+  const existing = cart.find(item => item.id === prodId);
+  if(existing) {
+    existing.qty += qty;
+  } else {
+    cart.push({id: prodId, name: prod.name, price: prod.price, qty});
+  }
+
   renderCart();
 }
 
@@ -328,129 +300,34 @@ function renderCart() {
   let total = 0;
 
   if(cart.length === 0) {
-    cartDiv.innerHTML = '<p style="text-align:center; color:#999;">No items yet</p>';
+    cartDiv.innerHTML = '<p style="text-align:center; color:#999; font-size:12px;">No items in cart</p>';
     document.getElementById('total').innerText = 'Total: ₱0';
     return;
   }
 
   let html = '';
-  cart.forEach((item, i) => {
+  cart.forEach(item => {
     const subtotal = item.price * item.qty;
     total += subtotal;
-    html += `<div class="cart-item"><span>${item.name} x${item.qty}</span><span>₱${subtotal}</span></div>`;
+    html += `<div class="cart-item"><span>${item.name} x${item.qty}</span><span>₱${subtotal.toFixed(2)}</span></div>`;
   });
 
   cartDiv.innerHTML = html;
-  document.getElementById('total').innerText = 'Total: ₱' + total;
+  document.getElementById('total').innerText = 'Total: ₱' + total.toFixed(2);
 }
 
-function saveSale() {
-  if(cart.length === 0) return alert('No items boss!');
-  const total = cart.reduce((sum, i) => sum + i.price * i.qty, 0);
-  localStorage.setItem('sale_' + Date.now(), JSON.stringify({date: new Date().toISOString().split('T')[0], items: cart, total}));
-  alert('Sale saved! Total: ₱' + total);
+function checkout() {
+  if(cart.length === 0) {
+    alert('Add items muna boss!');
+    return;
+  }
+  alert('✓ SALE COMPLETE\n' + document.getElementById('total').innerText);
+  clearCart();
+}
+
+function clearCart() {
   cart = [];
   renderCart();
-}
-
-// PRODUCTION
-function saveProduction() {
-  const data = {
-    date: document.getElementById('prodDate').value,
-    pork: +document.getElementById('prodPork').value,
-    beef: +document.getElementById('prodBeef').value,
-    chicken: +document.getElementById('prodChicken').value,
-    asado: +document.getElementById('prodAsado').value,
-    bola: +document.getElementById('prodBola').value,
-    notes: document.getElementById('prodNotes').value
-  };
-  localStorage.setItem('prod_' + data.date, JSON.stringify(data));
-  alert('Production saved for ' + data.date);
-}
-
-// EXPENSES
-function saveExpenses() {
-  const data = {
-    date: document.getElementById('expDate').value,
-    meat: +document.getElementById('expMeat').value,
-    wrapper: +document.getElementById('expWrapper').value,
-    gas: +document.getElementById('expGas').value,
-    labor: +document.getElementById('expLabor').value,
-    others: +document.getElementById('expOthers').value
-  };
-  data.total = data.meat + data.wrapper + data.gas + data.labor + data.others;
-  localStorage.setItem('exp_' + data.date, JSON.stringify(data));
-  alert('Daily expenses saved! Total: ₱' + data.total);
-}
-
-// INCOME
-function computeIncome() {
-  const date = document.getElementById('incDate').value;
-  const prod = JSON.parse(localStorage.getItem('prod_' + date) || '{}');
-  let salesTotal = 0;
-
-  // Get all sales for that date
-  Object.keys(localStorage).forEach(key => {
-    if(key.startsWith('sale_')) {
-      const sale = JSON.parse(localStorage.getItem(key));
-      if(sale.date === date) salesTotal += sale.total;
-    }
-  });
-
-  const prodTotal = (prod.pork||0)*8 + (prod.beef||0)*8 + (prod.chicken||0)*8 + (prod.asado||0)*25 + (prod.bola||0)*25;
-
-  document.getElementById('incSummary').innerHTML = `
-    <b>Sales from POS:</b> ₱${salesTotal}<br>
-    <b>Production Value:</b> ₱${prodTotal}<br>
-    <b style="color:#D32F2F;">Total Income:</b> ₱${salesTotal + prodTotal}
-  `;
-}
-
-// MONTHLY
-function saveMonthly() {
-  const month = document.getElementById('monthPick').value;
-  const data = {
-    month,
-    rent: +document.getElementById('monRent').value,
-    electric: +document.getElementById('monElectric').value,
-    water: +document.getElementById('monWater').value,
-    internet: +document.getElementById('monInternet').value
-  };
-  data.total = data.rent + data.electric + data.water + data.internet;
-  localStorage.setItem('monthly_' + month, JSON.stringify(data));
-  alert('Monthly expenses saved! Total: ₱' + data.total);
-}
-
-// NET PROFIT
-function computeNet() {
-  const month = document.getElementById('netMonth').value;
-  let totalIncome = 0;
-  let totalDailyExp = 0;
-
-  // Sum all sales + production for the month
-  Object.keys(localStorage).forEach(key => {
-    if(key.startsWith('sale_')) {
-      const sale = JSON.parse(localStorage.getItem(key));
-      if(sale.date.startsWith(month)) totalIncome += sale.total;
-    }
-    if(key.startsWith('exp_')) {
-      const exp = JSON.parse(localStorage.getItem(key));
-      if(exp.date.startsWith(month)) totalDailyExp += exp.total;
-    }
-  });
-
-  const monthly = JSON.parse(localStorage.getItem('monthly_' + month) || '{total:0}');
-  const totalExpenses = totalDailyExp + monthly.total;
-  const net = totalIncome - totalExpenses;
-
-  document.getElementById('netResult').innerHTML = `
-    <b>Total Income:</b> ₱${totalIncome.toLocaleString()}<br>
-    <b>Daily Expenses:</b> ₱${totalDailyExp.toLocaleString()}<br>
-    <b>Monthly Expenses:</b> ₱${monthly.total.toLocaleString()}<br>
-    <b>Total Expenses:</b> ₱${totalExpenses.toLocaleString()}<br>
-    <hr>
-    <b style="font-size:20px; color:${net >= 0? '#2E7D32' : '#D32F2F'};">NET PROFIT: ₱${net.toLocaleString()}</b>
-  `;
 }
 </script>
 </body>
