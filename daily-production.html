@@ -104,10 +104,20 @@
     font-size: 18px;
     font-weight: 800;
   }
+.select-cat-msg {
+    text-align: center;
+    color: #D32F2F;
+    font-size: 18px;
+    font-weight: 700;
+    padding: 50px 20px;
+  }
 .no-data {
     text-align: center;
     color: #999;
     padding: 40px;
+  }
+.hidden {
+    display: none!important;
   }
 </style>
 </head>
@@ -116,12 +126,12 @@
   <button class="back-btn" onclick="window.location='index.html'">⬅ Back to Menu</button>
 
   <h1>📦 Daily Production</h1>
-  <div class="subtitle">Track ng nagawa mo per day</div>
+  <div class="subtitle">Pili ka muna category boss</div>
 
   <input type="date" id="filterDate" onchange="loadProduction()">
 
   <h2 style="color:#D32F2F; text-align:center;">🛒 Select Category</h2>
-  <div class="category-grid">
+  <div class="category-grid" id="catGrid">
     <button class="cat-btn" onclick="selectCat('65s')">65's</button>
     <button class="cat-btn" onclick="selectCat('30s')">30's</button>
     <button class="cat-btn" onclick="selectCat('Big SIOMAI')">Big SIOMAI</button>
@@ -129,38 +139,49 @@
     <button class="cat-btn" onclick="selectCat('SIOPAO')">SIOPAO</button>
     <button class="cat-btn" onclick="selectCat('Sauce')">Sauce</button>
     <button class="cat-btn" onclick="selectCat('Others')">Others</button>
-    <button class="cat-btn active" onclick="selectCat('All')">All</button>
+    <button class="cat-btn" onclick="selectCat('All')">All</button>
   </div>
 
-  <div id="summary" class="summary" style="display:none;"></div>
+  <div id="selectMsg" class="select-cat-msg">👆 Pili ka muna category sa taas</div>
 
-  <div style="overflow-x:auto;">
-    <table id="prodTable">
-      <thead>
-        <tr>
-          <th>Time</th>
-          <th>Product</th>
-          <th>Category</th>
-          <th>Qty Made</th>
-        </tr>
-      </thead>
-      <tbody id="prodBody"></tbody>
-    </table>
+  <div id="resultSection" class="hidden">
+    <div id="summary" class="summary" style="display:none;"></div>
+
+    <div style="overflow-x:auto;">
+      <table id="prodTable">
+        <thead>
+          <tr>
+            <th>Time</th>
+            <th>Product</th>
+            <th>Category</th>
+            <th>Qty Made</th>
+          </tr>
+        </thead>
+        <tbody id="prodBody"></tbody>
+      </table>
+    </div>
+    <div id="noData" class="no-data" style="display:none;">Wala pang production na-log sa category na to 😅</div>
   </div>
-  <div id="noData" class="no-data" style="display:none;">Wala pang production na-log boss 😅</div>
 </div>
 
 <script>
-let currentCat = 'All';
+let currentCategory = null; // Walang default para di magshow agad
 
 function selectCat(cat) {
-  currentCat = cat;
+  currentCategory = cat;
   document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
   event.target.classList.add('active');
+
+  // Itago yung "pili ka muna" message
+  document.getElementById('selectMsg').classList.add('hidden');
+  document.getElementById('resultSection').classList.remove('hidden');
+
   loadProduction();
 }
 
 function loadProduction() {
+  if(!currentCategory) return; // Wag magload kung wala pang pinipili
+
   const production = JSON.parse(localStorage.getItem('production') || '[]');
   const filterDate = document.getElementById('filterDate').value || new Date().toISOString().split('T')[0];
   document.getElementById('filterDate').value = filterDate;
@@ -176,8 +197,8 @@ function loadProduction() {
   });
 
   // Filter by category
-  if(currentCat!== 'All') {
-    filtered = filtered.filter(p => p.category === currentCat);
+  if(currentCategory!== 'All') {
+    filtered = filtered.filter(p => p.category === currentCategory);
   }
 
   tbody.innerHTML = '';
@@ -199,9 +220,9 @@ function loadProduction() {
   // Show summary
   if(filtered.length > 0) {
     summary.style.display = 'block';
-    summary.textContent = currentCat === 'All'
-     ? `Total Production Today: ${totalQty} pcs`
-      : `Total ${currentCat}: ${totalQty} pcs`;
+    summary.textContent = currentCategory === 'All'
+    ? `Total Production Today: ${totalQty} pcs`
+      : `Total ${currentCategory}: ${totalQty} pcs`;
     noData.style.display = 'none';
     document.getElementById('prodTable').style.display = 'table';
   } else {
@@ -211,7 +232,8 @@ function loadProduction() {
   }
 }
 
-loadProduction();
+// Set today as default date
+document.getElementById('filterDate').value = new Date().toISOString().split('T')[0];
 </script>
 </body>
 </html>
