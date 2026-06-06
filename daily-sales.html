@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Daily Sales - Siomai Factory POS</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    background: #FFF8E1;
+    margin: 0;
+    padding: 20px;
+  }
+ .container {
+    max-width: 800px;
+    margin: auto;
+    background: white;
+    border-radius: 20px;
+    padding: 20px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    border-top: 6px solid #D32F2F;
+  }
+  h1 {
+    text-align: center;
+    color: #D32F2F;
+    margin-bottom: 5px;
+  }
+ .subtitle {
+    text-align: center;
+    color: #666;
+    font-size: 14px;
+    margin-bottom: 20px;
+  }
+ .summary {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+ .card {
+    background: #FFA726;
+    color: white;
+    padding: 15px;
+    border-radius: 15px;
+    text-align: center;
+  }
+ .card h3 {
+    margin: 0;
+    font-size: 12px;
+    opacity: 0.9;
+  }
+ .card p {
+    margin: 5px 0 0 0;
+    font-size: 20px;
+    font-weight: 800;
+  }
+  input[type=date] {
+    width: 100%;
+    padding: 12px;
+    border: 2px solid #FFCC80;
+    border-radius: 10px;
+    font-size: 16px;
+    margin-bottom: 15px;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12px;
+  }
+  th {
+    background: #D32F2F;
+    color: white;
+    padding: 10px;
+    text-align: left;
+    position: sticky;
+    top: 0;
+  }
+  td {
+    padding: 8px;
+    border-bottom: 1px solid #eee;
+  }
+  tr:nth-child(even) {
+    background: #FFF3E0;
+  }
+ .back-btn {
+    display: block;
+    width: 100%;
+    padding: 14px;
+    background: #757575;
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-weight: 800;
+    font-size: 16px;
+    margin-top: 15px;
+    cursor: pointer;
+  }
+ .no-data {
+    text-align: center;
+    color: #999;
+    padding: 40px;
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>📊 Daily Sales</h1>
+  <div class="subtitle">Sales Report & Transaction History</div>
+
+  <input type="date" id="filterDate" onchange="loadSales()">
+
+  <div class="summary">
+    <div class="card">
+      <h3>Total Sales</h3>
+      <p id="totalSales">₱0</p>
+    </div>
+    <div class="card">
+      <h3>Transactions</h3>
+      <p id="totalCount">0</p>
+    </div>
+    <div class="card">
+      <h3>Avg Sale</h3>
+      <p id="avgSale">₱0</p>
+    </div>
+  </div>
+
+  <div style="overflow-x:auto;">
+    <table id="salesTable">
+      <thead>
+        <tr>
+          <th>Time</th>
+          <th>Items</th>
+          <th>Payment</th>
+          <th>Total</th>
+        </tr>
+      </thead>
+      <tbody id="salesBody">
+      </tbody>
+    </table>
+  </div>
+  <div id="noData" class="no-data" style="display:none;">Wala pang sales ngayong araw boss 😅</div>
+
+  <button class="back-btn" onclick="window.location='index.html'">⬅ Back to Main Menu</button>
+</div>
+
+<script>
+function loadSales() {
+  const sales = JSON.parse(localStorage.getItem('sales') || '[]');
+  const filterDate = document.getElementById('filterDate').value;
+  const tbody = document.getElementById('salesBody');
+  const noData = document.getElementById('noData');
+
+  // Set today as default
+  if(!filterDate) {
+    document.getElementById('filterDate').value = new Date().toISOString().split('T')[0];
+  }
+
+  const selectedDate = document.getElementById('filterDate').value;
+
+  // Filter by date
+  const filteredSales = sales.filter(s => {
+    const saleDate = new Date(s.datetime).toISOString().split('T')[0];
+    return saleDate === selectedDate;
+  });
+
+  tbody.innerHTML = '';
+
+  let total = 0;
+  filteredSales.reverse().forEach(s => {
+    const time = new Date(s.datetime).toLocaleTimeString('en-PH', {hour: '2-digit', minute:'2-digit'});
+    const items = s.items.map(i => `${i.name} x${i.qty}`).join(', ');
+    const payment = s.payment || 'Cash';
+
+    tbody.innerHTML += `
+      <tr>
+        <td>${time}</td>
+        <td>${items}</td>
+        <td>${payment}</td>
+        <td>₱${s.total.toFixed(2)}</td>
+      </tr>
+    `;
+    total += s.total;
+  });
+
+  // Update summary
+  document.getElementById('totalSales').textContent = `₱${total.toFixed(2)}`;
+  document.getElementById('totalCount').textContent = filteredSales.length;
+  document.getElementById('avgSale').textContent = filteredSales.length > 0? `₱${(total/filteredSales.length).toFixed(2)}` : '₱0';
+
+  noData.style.display = filteredSales.length === 0? 'block' : 'none';
+  document.getElementById('salesTable').style.display = filteredSales.length === 0? 'none' : 'table';
+}
+
+// Load on start
+loadSales();
+</script>
+</body>
+</html>
