@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Daily Production - Siomai Factory POS</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    background: #FFF8E1;
+    margin: 0;
+    padding: 20px;
+  }
+.container {
+    max-width: 700px;
+    margin: auto;
+    background: white;
+    border-radius: 20px;
+    padding: 20px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    border-top: 6px solid #D32F2F;
+  }
+  h1 {
+    text-align: center;
+    color: #D32F2F;
+    margin-bottom: 5px;
+  }
+.subtitle {
+    text-align: center;
+    color: #666;
+    font-size: 14px;
+    margin-bottom: 20px;
+  }
+  input[type=date] {
+    width: 100%;
+    padding: 12px;
+    border: 2px solid #FFCC80;
+    border-radius: 10px;
+    font-size: 16px;
+    margin-bottom: 20px;
+  }
+.category-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+.cat-btn {
+    padding: 25px 10px;
+    background: #FFA726;
+    color: #D32F2F;
+    border: none;
+    border-radius: 15px;
+    font-weight: 800;
+    font-size: 18px;
+    cursor: pointer;
+    transition: transform 0.1s;
+  }
+.cat-btn:active {
+    transform: scale(0.95);
+  }
+.cat-btn.active {
+    background: #D32F2F;
+    color: white;
+  }
+.back-btn {
+    width: 100%;
+    padding: 14px;
+    background: #757575;
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-weight: 800;
+    font-size: 16px;
+    margin-bottom: 15px;
+    cursor: pointer;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+    margin-top: 15px;
+  }
+  th {
+    background: #D32F2F;
+    color: white;
+    padding: 10px;
+    text-align: left;
+  }
+  td {
+    padding: 8px;
+    border-bottom: 1px solid #eee;
+  }
+  tr:nth-child(even) {
+    background: #FFF3E0;
+  }
+.summary {
+    background: #4CAF50;
+    color: white;
+    padding: 15px;
+    border-radius: 12px;
+    text-align: center;
+    margin-top: 15px;
+    font-size: 18px;
+    font-weight: 800;
+  }
+.no-data {
+    text-align: center;
+    color: #999;
+    padding: 40px;
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <button class="back-btn" onclick="window.location='index.html'">⬅ Back to Menu</button>
+
+  <h1>📦 Daily Production</h1>
+  <div class="subtitle">Track ng nagawa mo per day</div>
+
+  <input type="date" id="filterDate" onchange="loadProduction()">
+
+  <h2 style="color:#D32F2F; text-align:center;">🛒 Select Category</h2>
+  <div class="category-grid">
+    <button class="cat-btn" onclick="selectCat('65s')">65's</button>
+    <button class="cat-btn" onclick="selectCat('30s')">30's</button>
+    <button class="cat-btn" onclick="selectCat('Big SIOMAI')">Big SIOMAI</button>
+    <button class="cat-btn" onclick="selectCat('Dumplings')">Dumplings</button>
+    <button class="cat-btn" onclick="selectCat('SIOPAO')">SIOPAO</button>
+    <button class="cat-btn" onclick="selectCat('Sauce')">Sauce</button>
+    <button class="cat-btn" onclick="selectCat('Others')">Others</button>
+    <button class="cat-btn active" onclick="selectCat('All')">All</button>
+  </div>
+
+  <div id="summary" class="summary" style="display:none;"></div>
+
+  <div style="overflow-x:auto;">
+    <table id="prodTable">
+      <thead>
+        <tr>
+          <th>Time</th>
+          <th>Product</th>
+          <th>Category</th>
+          <th>Qty Made</th>
+        </tr>
+      </thead>
+      <tbody id="prodBody"></tbody>
+    </table>
+  </div>
+  <div id="noData" class="no-data" style="display:none;">Wala pang production na-log boss 😅</div>
+</div>
+
+<script>
+let currentCat = 'All';
+
+function selectCat(cat) {
+  currentCat = cat;
+  document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+  event.target.classList.add('active');
+  loadProduction();
+}
+
+function loadProduction() {
+  const production = JSON.parse(localStorage.getItem('production') || '[]');
+  const filterDate = document.getElementById('filterDate').value || new Date().toISOString().split('T')[0];
+  document.getElementById('filterDate').value = filterDate;
+
+  const tbody = document.getElementById('prodBody');
+  const noData = document.getElementById('noData');
+  const summary = document.getElementById('summary');
+
+  // Filter by date
+  let filtered = production.filter(p => {
+    const prodDate = new Date(p.datetime).toISOString().split('T')[0];
+    return prodDate === filterDate;
+  });
+
+  // Filter by category
+  if(currentCat!== 'All') {
+    filtered = filtered.filter(p => p.category === currentCat);
+  }
+
+  tbody.innerHTML = '';
+  let totalQty = 0;
+
+  filtered.reverse().forEach(p => {
+    const time = new Date(p.datetime).toLocaleTimeString('en-PH', {hour: '2-digit', minute:'2-digit'});
+    tbody.innerHTML += `
+      <tr>
+        <td>${time}</td>
+        <td>${p.product}</td>
+        <td>${p.category}</td>
+        <td><b>${p.qty}</b> pcs</td>
+      </tr>
+    `;
+    totalQty += p.qty;
+  });
+
+  // Show summary
+  if(filtered.length > 0) {
+    summary.style.display = 'block';
+    summary.textContent = currentCat === 'All'
+     ? `Total Production Today: ${totalQty} pcs`
+      : `Total ${currentCat}: ${totalQty} pcs`;
+    noData.style.display = 'none';
+    document.getElementById('prodTable').style.display = 'table';
+  } else {
+    summary.style.display = 'none';
+    noData.style.display = 'block';
+    document.getElementById('prodTable').style.display = 'none';
+  }
+}
+
+loadProduction();
+</script>
+</body>
+</html>
