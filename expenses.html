@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Daily Expenses - Siomai Factory POS</title>
+<style>
+ * {margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI', Tahoma, sans-serif;}
+ body {background:#FFF8E1; padding:15px; min-height:100vh;}
+.container {
+   max-width:480px;
+   margin:auto;
+   background:white;
+   border-radius:20px;
+   padding:20px;
+   box-shadow:0 6px 20px rgba(0,0,0,0.12);
+   border-top:6px solid #E91E63;
+ }
+ h2 { color:#D32F2F; text-align:center; margin-bottom:8px; font-size:24px; }
+.subtitle { text-align:center; color:#666; font-size:13px; margin-bottom:20px; }
+.back-btn {
+   background:#757575; color:white; border:none; padding:10px 18px;
+   border-radius:8px; cursor:pointer; margin-bottom:15px; font-size:13px; font-weight:600;
+ }
+.menu-grid {
+   display:grid; grid-template-columns:repeat(2, 1fr); gap:12px;
+ }
+.menu-btn {
+   padding:35px 10px; border:none; border-radius:15px;
+   background:linear-gradient(135deg, #F8BBD0, #F48FB1);
+   color:#880E4F; font-weight:800; font-size:15px; cursor:pointer;
+   text-align:center; line-height:1.4;
+ }
+.menu-btn:active {transform:scale(0.95); background:#F06292;}
+.prod-form {
+   background:#FFF8E1; border:2px dashed #FFCC80; border-radius:12px;
+   padding:15px; margin-bottom:18px;
+ }
+.prod-form h4 { color:#D32F2F; margin-bottom:10px; font-size:14px; }
+.input-group {margin-bottom:12px;}
+.input-group label {
+   font-size:12px; font-weight:700; color:#D32F2F; margin-bottom:4px; display:block;
+ }
+.input-group input,.input-group textarea {
+   width:100%; padding:12px; border:2px solid #FFE0B2; border-radius:8px;
+   font-size:14px; background:white;
+ }
+.input-group textarea {resize:vertical; min-height:60px;}
+.save-btn {
+   width:100%; padding:14px; background:#C2185B; color:white; border:none;
+   border-radius:8px; font-weight:800; cursor:pointer; margin-top:8px; font-size:15px;
+ }
+.success {
+   background:#4CAF50; color:white; padding:12px; border-radius:8px;
+   text-align:center; margin-top:12px; display:none; font-weight:700;
+ }
+.page {display:none;}
+.page.active {display:block;}
+.change-cat {
+   background:#FF9800; color:white; border:none; padding:10px;
+   border-radius:8px; width:100%; margin-bottom:15px; font-weight:700; cursor:pointer;
+ }
+</style>
+</head>
+<body>
+<div class="container">
+  <!-- PAGE 1: SELECT CATEGORY -->
+  <div id="categoryPage" class="page active">
+    <button class="back-btn" onclick="window.location='index.html'">← Back to Menu</button>
+    <h2>💸 Log Expenses</h2>
+    <p class="subtitle">Anong gastos today boss?</p>
+    <div class="menu-grid">
+      <button class="menu-btn" onclick="openCat('Sahod')">👷 Sahod<br>Workers</button>
+      <button class="menu-btn" onclick="openCat('Kuryente')">⚡ Kuryente</button>
+      <button class="menu-btn" onclick="openCat('Tubig')">💧 Tubig</button>
+      <button class="menu-btn" onclick="openCat('Upa')">🏠 Upa<br>Pwesto</button>
+      <button class="menu-btn" onclick="openCat('Gas/LPG')">🔥 Gas/LPG</button>
+      <button class="menu-btn" onclick="openCat('Packaging')">📦 Packaging</button>
+      <button class="menu-btn" onclick="openCat('Transport')">🚚 Transport</button>
+      <button class="menu-btn" onclick="openCat('Others')">📝 Others</button>
+    </div>
+  </div>
+
+  <!-- PAGE 2: INPUT FORM -->
+  <div id="inputPage" class="page">
+    <button class="back-btn" onclick="backToCat()">← Back to Categories</button>
+    <h2 id="catTitle">Sahod</h2>
+
+    <div class="prod-form">
+      <h4>+ Log Expense sa <span id="catName">Sahod</span></h4>
+      <div class="input-group">
+        <label>Description / Para saan</label>
+        <input type="text" id="desc" placeholder="ex: Sahod ni Kuya Juan">
+      </div>
+      <div class="input-group">
+        <label style="color:#C2185B;">Amount ₱</label>
+        <input type="number" id="amount" placeholder="1500" min="1" step="0.01">
+      </div>
+      <div class="input-group">
+        <label>Notes - optional</label>
+        <textarea id="notes" placeholder="Dagdag detalye..."></textarea>
+      </div>
+      <button class="save-btn" onclick="saveExpense()">✅ Save Expense</button>
+      <div id="success" class="success">Saved! Naka-log na sa Daily Expenses 👌</div>
+    </div>
+  </div>
+</div>
+
+<script>
+let currentCat = 'Sahod';
+let expenses = JSON.parse(localStorage.getItem('expenses') || '[]');
+
+function showPage(pageId) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById(pageId).classList.add('active');
+}
+
+function openCat(cat) {
+  currentCat = cat;
+  document.getElementById('catTitle').innerText = cat;
+  document.getElementById('catName').innerText = cat;
+
+  // Auto placeholder based sa category
+  const placeholders = {
+    'Sahod': 'ex: Sahod ni Kuya Juan',
+    'Kuryente': 'ex: Meralco Bill April',
+    'Tubig': 'ex: Maynilad Bill',
+    'Upa': 'ex: Upa sa pwesto',
+    'Gas/LPG': 'ex: 1 tank LPG',
+    'Packaging': 'ex: Plastic + Box',
+    'Transport': 'ex: Delivery fee',
+    'Others': 'ex: Anong binili'
+  };
+  document.getElementById('desc').placeholder = placeholders[cat];
+
+  showPage('inputPage');
+}
+
+function backToCat() {
+  document.getElementById('desc').value = '';
+  document.getElementById('amount').value = '';
+  document.getElementById('notes').value = '';
+  document.getElementById('success').style.display = 'none';
+  showPage('categoryPage');
+}
+
+function saveExpense() {
+  const desc = document.getElementById('desc').value.trim();
+  const amount = parseFloat(document.getElementById('amount').value);
+  const notes = document.getElementById('notes').value.trim();
+
+  if(!desc ||!amount) {
+    alert('Lagay ka description at amount boss!');
+    return;
+  }
+
+  // Save sa expenses log
+  expenses.push({
+    datetime: new Date().toISOString(),
+    date: new Date().toISOString().split('T')[0],
+    category: currentCat,
+    description: desc,
+    amount: amount,
+    notes: notes
+  });
+
+  localStorage.setItem('expenses', JSON.stringify(expenses));
+
+  // Show success
+  document.getElementById('success').style.display = 'block';
+  document.getElementById('desc').value = '';
+  document.getElementById('amount').value = '';
+  document.getElementById('notes').value = '';
+
+  setTimeout(() => {
+    document.getElementById('success').style.display = 'none';
+  }, 2500);
+}
+</script>
+</body>
+</html>
