@@ -3,139 +3,83 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Net Profit - Siomai Factory POS</title>
+<title>Net Profit - Siomai Factory</title>
 <style>
- * {margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI', Tahoma, sans-serif;}
- body {background:#FFF8E1; padding:15px; min-height:100vh;}
-.container {
-   max-width:700px;
-   margin:auto;
-   background:white;
-   border-radius:20px;
-   padding:20px;
-   box-shadow:0 6px 20px rgba(0,0,0,0.12);
-   border-top:6px solid #4CAF50;
- }
- h2 { color:#D32F2F; text-align:center; margin-bottom:8px; font-size:24px; }
-.subtitle { text-align:center; color:#666; font-size:13px; margin-bottom:20px; }
-.back-btn {
-   background:#757575; color:white; border:none; padding:10px 18px;
-   border-radius:8px; cursor:pointer; margin-bottom:15px; font-size:13px; font-weight:600;
- }
-input[type=date] {
-   width:100%; padding:12px; border:2px solid #FFCC80; border-radius:8px;
-   font-size:16px; margin-bottom:20px;
- }
-.summary-grid {
-   display:grid; grid-template-columns:repeat(3, 1fr); gap:10px; margin-bottom:25px;
- }
-.card {
-   padding:20px 10px; border-radius:15px; text-align:center; color:white;
- }
-.card.green {background:linear-gradient(135deg, #4CAF50, #388E3C);}
-.card.red {background:linear-gradient(135deg, #F44336, #C62828);}
-.card.blue {background:linear-gradient(135deg, #2196F3, #1976D2);}
+* {margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI', Tahoma, sans-serif;}
+body {background:#FFF8E1; padding:15px; min-height:100vh;}
+.container {max-width:700px; margin:auto; background:white; border-radius:20px; padding:20px; box-shadow:0 6px 20px rgba(0,0,0,0.12); border-top:6px solid #4CAF50;}
+h2 {color:#D32F2F; text-align:center; margin-bottom:8px; font-size:24px;}
+.subtitle {text-align:center; color:#666; font-size:13px; margin-bottom:20px;}
+.back-btn {background:#757575; color:white; border:none; padding:10px 18px; border-radius:8px; cursor:pointer; margin-bottom:15px; font-size:13px; font-weight:600;}
+input[type=date] {width:100%; padding:12px; border:2px solid #FFCC80; border-radius:8px; margin-bottom:20px; font-size:16px;}
+.summary-grid {display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-bottom:25px;}
+.card {padding:20px 10px; border-radius:15px; text-align:center; color:white;}
+.card.green {background:linear-gradient(135deg,#4CAF50,#388E3C);}
+.card.red {background:linear-gradient(135deg,#F44336,#C62828);}
+.card.blue {background:linear-gradient(135deg,#2196F3,#1976D2);}
 .card-label {font-size:12px; opacity:0.9; margin-bottom:5px;}
 .card-value {font-size:22px; font-weight:800;}
-.section-title {
-   color:#D32F2F; font-size:16px; font-weight:800; margin:20px 0 10px 0;
-   border-left:4px solid #D32F2F; padding-left:10px;
- }
-table {
-   width:100%; border-collapse:collapse; font-size:13px; margin-bottom:15px;
-   table-layout:fixed;
- }
-th {
-   background:#D32F2F; color:white; padding:10px; text-align:left;
- }
-td {
-   padding:8px; border-bottom:1px solid #eee; vertical-align:top;
- }
-th:nth-child(1), td:nth-child(1) {width:15%;} /* Time */
-th:nth-child(2), td:nth-child(2) {width:55%;} /* Items - mas malawak */
-th:nth-child(3), td:nth-child(3) {width:15%;} /* Payment */
-th:nth-child(4), td:nth-child(4) {width:15%; white-space:nowrap; text-align:right;} /* Total */
-
+.section-title {color:#D32F2F; font-weight:800; margin:20px 0 10px 0; border-left:4px solid #D32F2F; padding-left:10px;}
+table {width:100%; border-collapse:collapse; font-size:13px; margin-bottom:15px; table-layout:fixed;}
+th {background:#D32F2F; color:white; padding:10px; text-align:left;}
+td {padding:8px; border-bottom:1px solid #eee; vertical-align:top; word-break:break-word;}
+th:nth-child(1), td:nth-child(1) {width:15%;}
+th:nth-child(2), td:nth-child(2) {width:40%;}
+th:nth-child(3), td:nth-child(3) {width:20%;}
+th:nth-child(4), td:nth-child(4) {width:25%; text-align:right; white-space:nowrap;}
 tr:nth-child(even) {background:#FFF3E0;}
-.total-row {
-   background:#4CAF50!important; color:white; font-weight:800;
- }
+.total-row {background:#4CAF50!important; color:white; font-weight:800;}
 .total-row td {border:none;}
-.no-data {
-   text-align:center; color:#999; padding:40px 0; font-size:14px;
- }
+.no-data {text-align:center; color:#999; padding:40px 0;}
 .profit-positive {color:#4CAF50; font-weight:800;}
 .profit-negative {color:#F44336; font-weight:800;}
-/* STYLE NG ITEMS WITH PRICE */
-.item-detail {
-   margin-bottom:4px; line-height:1.5; font-size:12px;
- }
+.item-detail {margin-bottom:4px; line-height:1.4; font-size:12px;}
 .item-name {font-weight:600; color:#333;}
 .item-total {font-weight:700; color:#D32F2F;}
-.subtotal-line {
-   margin-top:6px; padding-top:6px; border-top:1px dashed #ccc;
-   font-weight:800; color:#D32F2F; font-size:13px;
- }
+.subtotal-line {margin-top:6px; padding-top:6px; border-top:1px dashed #ccc; font-weight:800; color:#D32F2F;}
+.proof-img {margin-top:8px; max-width:120px; border:2px solid #2196F3; border-radius:8px; cursor:pointer;}
+.proof-label {font-size:11px; color:#2196F3; font-weight:700; margin-top:4px; display:block;}
 </style>
 </head>
 <body>
 <div class="container">
-  <button class="back-btn" onclick="window.location='index.html'">← Back to Menu</button>
+<button class="back-btn" onclick="window.location='index.html'">← Back</button>
+<h2>📈 Net Profit</h2>
+<p class="subtitle">Benta vs Expenses - Review ni Boss</p>
+<input type="date" id="filterDate" onchange="loadReport()">
 
-  <h2>📈 Net Profit</h2>
-  <p class="subtitle">Benta vs Expenses - Review ni Boss</p>
-
-  <input type="date" id="filterDate" onchange="loadReport()">
-
-  <div class="summary-grid">
-    <div class="card green">
-      <div class="card-label">Total Sales</div>
-      <div class="card-value" id="totalSales">₱0.00</div>
-    </div>
-    <div class="card red">
-      <div class="card-label">Total Expenses</div>
-      <div class="card-value" id="totalExpenses">₱0.00</div>
-    </div>
-    <div class="card blue">
-      <div class="card-label">Net Profit</div>
-      <div class="card-value" id="netProfit">₱0.00</div>
-    </div>
+<div class="summary-grid">
+  <div class="card green">
+    <div class="card-label">Total Sales</div>
+    <div class="card-value" id="totalSales">₱0.00</div>
   </div>
-
-  <!-- Sales Breakdown -->
-  <div class="section-title">💰 Sales Breakdown</div>
-  <div style="overflow-x:auto;">
-    <table id="salesTable">
-      <thead>
-        <tr>
-          <th>Time</th>
-          <th>Items + Price</th>
-          <th>Payment</th>
-          <th>Total</th>
-        </tr>
-      </thead>
-      <tbody id="salesBody"></tbody>
-    </table>
+  <div class="card red">
+    <div class="card-label">Total Expenses</div>
+    <div class="card-value" id="totalExpenses">₱0.00</div>
   </div>
-  <div id="noSales" class="no-data">Wala pang sales na-log ngayong araw</div>
-
-  <!-- Expenses Breakdown -->
-  <div class="section-title">💸 Expenses Breakdown</div>
-  <div style="overflow-x:auto;">
-    <table id="expensesTable">
-      <thead>
-        <tr>
-          <th>Time</th>
-          <th>Description</th>
-          <th>Notes</th>
-          <th>Amount</th>
-        </tr>
-      </thead>
-      <tbody id="expensesBody"></tbody>
-    </table>
+  <div class="card blue">
+    <div class="card-label">Net Profit</div>
+    <div class="card-value" id="netProfit">₱0.00</div>
   </div>
-  <div id="noExpenses" class="no-data">Wala pang expenses na-log ngayong araw</div>
+</div>
 
+<div class="section-title">💰 Sales Breakdown</div>
+<div style="overflow-x:auto;">
+<table id="salesTable">
+<thead><tr><th>Time</th><th>Items + Price</th><th>Payment</th><th>Total</th></tr></thead>
+<tbody id="salesBody"></tbody>
+</table>
+</div>
+<div id="noSales" class="no-data">Wala pang sales</div>
+
+<div class="section-title">💸 Expenses Breakdown</div>
+<div style="overflow-x:auto;">
+<table id="expensesTable">
+<thead><tr><th>Time</th><th>Description</th><th>Notes</th><th>Amount</th></tr></thead>
+<tbody id="expensesBody"></tbody>
+</table>
+</div>
+<div id="noExpenses" class="no-data">Wala pang expenses</div>
 </div>
 
 <script>
@@ -146,17 +90,10 @@ function loadReport() {
   const sales = JSON.parse(localStorage.getItem('sales') || '[]');
   const expenses = JSON.parse(localStorage.getItem('expenses') || '[]');
 
-  const salesToday = sales.filter(s => {
-    const saleDate = new Date(s.datetime).toISOString().split('T')[0];
-    return saleDate === filterDate;
-  });
-
+  const salesToday = sales.filter(s => new Date(s.datetime).toISOString().split('T')[0] === filterDate);
   const expensesToday = expenses.filter(e => e.date === filterDate);
 
   let totalSales = 0;
-  let totalExpenses = 0;
-
-  // Render Sales - MAY PRICE PER ITEM NA BOSS
   const salesBody = document.getElementById('salesBody');
   salesBody.innerHTML = '';
 
@@ -167,55 +104,37 @@ function loadReport() {
     salesToday.reverse().forEach(s => {
       const time = new Date(s.datetime).toLocaleTimeString('en-PH', {hour: '2-digit', minute:'2-digit'});
 
-      // Gawin nating per item + price + line total
       let itemsHtml = '';
       let transactionTotal = 0;
-
       if(Array.isArray(s.items)) {
         s.items.forEach(i => {
           const price = parseFloat(i.price || 0);
           const qty = parseInt(i.qty || 1);
           const lineTotal = price * qty;
           transactionTotal += lineTotal;
-
-          itemsHtml += `<div class="item-detail">
-            <span class="item-name">${i.name} x${qty}</span> =
-            <span class="item-total">₱${lineTotal.toFixed(2)}</span>
-          </div>`;
+          itemsHtml += `<div class="item-detail"><span class="item-name">${i.name} x${qty} =</span> <span class="item-total">₱${lineTotal.toFixed(2)}</span></div>`;
         });
-      } else if(s.product) {
-        const total = parseFloat(s.total || 0);
-        itemsHtml = `<div class="item-detail">${s.product} = ₱${total.toFixed(2)}</div>`;
-        transactionTotal = total;
       }
-
       itemsHtml += `<div class="subtotal-line">TOTAL = ₱${transactionTotal.toFixed(2)}</div>`;
 
       const payment = s.payment || 'Cash';
       totalSales += transactionTotal;
 
-      salesBody.innerHTML += `
-        <tr>
-          <td>${time}</td>
-          <td>${itemsHtml}</td>
-          <td>${payment}</td>
-          <td>₱${transactionTotal.toFixed(2)}</td>
-        </tr>
-      `;
+      let proofHtml = '';
+      if(payment.toLowerCase() === 'gcash' && s.proofUrl) {
+        proofHtml = `<span class="proof-label">📱 Proof:</span><img src="${s.proofUrl}" class="proof-img" onclick="window.open('${s.proofUrl}')">`;
+      }
+
+      salesBody.innerHTML += `<tr><td>${time}</td><td>${itemsHtml}</td><td>${payment}${proofHtml}</td><td>₱${transactionTotal.toFixed(2)}</td></tr>`;
     });
 
-    salesBody.innerHTML += `
-      <tr class="total-row">
-        <td colspan="3">GRAND TOTAL SALES</td>
-        <td>₱${totalSales.toFixed(2)}</td>
-      </tr>
-    `;
+    salesBody.innerHTML += `<tr class="total-row"><td colspan="3">GRAND TOTAL SALES</td><td>₱${totalSales.toFixed(2)}</td></tr>`;
   } else {
     document.getElementById('noSales').style.display = 'block';
     document.getElementById('salesTable').style.display = 'none';
   }
 
-  // Render Expenses
+  let totalExpenses = 0;
   const expensesBody = document.getElementById('expensesBody');
   expensesBody.innerHTML = '';
 
@@ -227,23 +146,10 @@ function loadReport() {
       const time = new Date(e.datetime).toLocaleTimeString('en-PH', {hour: '2-digit', minute:'2-digit'});
       const amount = parseFloat(e.amount || 0);
       totalExpenses += amount;
-
-      expensesBody.innerHTML += `
-        <tr>
-          <td>${time}</td>
-          <td>${e.description}</td>
-          <td>${e.notes || '-'}</td>
-          <td>₱${amount.toFixed(2)}</td>
-        </tr>
-      `;
+      expensesBody.innerHTML += `<tr><td>${time}</td><td>${e.description}</td><td>${e.notes || '-'}</td><td>₱${amount.toFixed(2)}</td></tr>`;
     });
 
-    expensesBody.innerHTML += `
-      <tr class="total-row">
-        <td colspan="3">TOTAL EXPENSES</td>
-        <td>₱${totalExpenses.toFixed(2)}</td>
-      </tr>
-    `;
+    expensesBody.innerHTML += `<tr class="total-row"><td colspan="3">TOTAL EXPENSES</td><td>₱${totalExpenses.toFixed(2)}</td></tr>`;
   } else {
     document.getElementById('noExpenses').style.display = 'block';
     document.getElementById('expensesTable').style.display = 'none';
@@ -252,10 +158,9 @@ function loadReport() {
   const netProfit = totalSales - totalExpenses;
   document.getElementById('totalSales').textContent = `₱${totalSales.toFixed(2)}`;
   document.getElementById('totalExpenses').textContent = `₱${totalExpenses.toFixed(2)}`;
-
   const profitEl = document.getElementById('netProfit');
   profitEl.textContent = `₱${netProfit.toFixed(2)}`;
-  profitEl.className = netProfit >= 0? 'card-value profit-positive' : 'card-value profit-negative';
+  profitEl.className = 'card-value ' + (netProfit >= 0? 'profit-positive' : 'profit-negative');
 }
 
 document.getElementById('filterDate').value = new Date().toISOString().split('T')[0];
