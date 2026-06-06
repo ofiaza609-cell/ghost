@@ -43,13 +43,20 @@ input[type=date] {
  }
 table {
    width:100%; border-collapse:collapse; font-size:13px; margin-bottom:15px;
+   table-layout:fixed;
  }
 th {
    background:#D32F2F; color:white; padding:10px; text-align:left;
  }
 td {
-   padding:8px; border-bottom:1px solid #eee; word-break:break-word;
+   padding:8px; border-bottom:1px solid #eee; vertical-align:top;
  }
+/* FIX WIDTH NG COLUMNS */
+th:nth-child(1), td:nth-child(1) {width:15%;} /* Time */
+th:nth-child(2), td:nth-child(2) {width:50%;} /* Items - mas malawak */
+th:nth-child(3), td:nth-child(3) {width:15%;} /* Payment */
+th:nth-child(4), td:nth-child(4) {width:20%; white-space:nowrap; text-align:right;} /* Total - wag putulin */
+
 tr:nth-child(even) {background:#FFF3E0;}
 .total-row {
    background:#4CAF50!important; color:white; font-weight:800;
@@ -60,6 +67,13 @@ tr:nth-child(even) {background:#FFF3E0;}
  }
 .profit-positive {color:#4CAF50; font-weight:800;}
 .profit-negative {color:#F44336; font-weight:800;}
+/* BULLET LIST SA ITEMS */
+.item-list {
+   margin:0; padding-left:18px; list-style-type:disc;
+ }
+.item-list li {
+   margin-bottom:3px; line-height:1.4;
+ }
 </style>
 </head>
 <body>
@@ -131,7 +145,6 @@ function loadReport() {
   const sales = JSON.parse(localStorage.getItem('sales') || '[]');
   const expenses = JSON.parse(localStorage.getItem('expenses') || '[]');
 
-  // Filter by date
   const salesToday = sales.filter(s => {
     const saleDate = new Date(s.datetime).toISOString().split('T')[0];
     return saleDate === filterDate;
@@ -139,11 +152,10 @@ function loadReport() {
 
   const expensesToday = expenses.filter(e => e.date === filterDate);
 
-  // Compute totals
   let totalSales = 0;
   let totalExpenses = 0;
 
-  // Render Sales - FIX DITO BOSS PARA WALA [OBJECT OBJECT]
+  // Render Sales - BULLET LIST NA BOSS
   const salesBody = document.getElementById('salesBody');
   salesBody.innerHTML = '';
 
@@ -154,13 +166,16 @@ function loadReport() {
     salesToday.reverse().forEach(s => {
       const time = new Date(s.datetime).toLocaleTimeString('en-PH', {hour: '2-digit', minute:'2-digit'});
 
-      // FIX: i-convert items array to string
-      let items = 'N/A';
+      // Gawin nating bullet list yung items
+      let itemsHtml = '<ul class="item-list">';
       if(Array.isArray(s.items)) {
-        items = s.items.map(i => `${i.name} x${i.qty}`).join(', ');
+        s.items.forEach(i => {
+          itemsHtml += `<li>${i.name} x${i.qty}</li>`;
+        });
       } else if(s.product) {
-        items = s.product;
+        itemsHtml += `<li>${s.product}</li>`;
       }
+      itemsHtml += '</ul>';
 
       const payment = s.payment || 'Cash';
       const total = parseFloat(s.total || s.amount || 0);
@@ -169,14 +184,13 @@ function loadReport() {
       salesBody.innerHTML += `
         <tr>
           <td>${time}</td>
-          <td>${items}</td>
+          <td>${itemsHtml}</td>
           <td>${payment}</td>
           <td>₱${total.toFixed(2)}</td>
         </tr>
       `;
     });
 
-    // Total row
     salesBody.innerHTML += `
       <tr class="total-row">
         <td colspan="3">TOTAL SALES</td>
@@ -211,7 +225,6 @@ function loadReport() {
       `;
     });
 
-    // Total row
     expensesBody.innerHTML += `
       <tr class="total-row">
         <td colspan="3">TOTAL EXPENSES</td>
@@ -223,9 +236,7 @@ function loadReport() {
     document.getElementById('expensesTable').style.display = 'none';
   }
 
-  // Compute Net Profit
   const netProfit = totalSales - totalExpenses;
-
   document.getElementById('totalSales').textContent = `₱${totalSales.toFixed(2)}`;
   document.getElementById('totalExpenses').textContent = `₱${totalExpenses.toFixed(2)}`;
 
@@ -234,7 +245,6 @@ function loadReport() {
   profitEl.className = netProfit >= 0? 'card-value profit-positive' : 'card-value profit-negative';
 }
 
-// Set today as default
 document.getElementById('filterDate').value = new Date().toISOString().split('T')[0];
 loadReport();
 </script>
