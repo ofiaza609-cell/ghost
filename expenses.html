@@ -22,16 +22,6 @@
    background:#757575; color:white; border:none; padding:10px 18px;
    border-radius:8px; cursor:pointer; margin-bottom:15px; font-size:13px; font-weight:600;
  }
-.menu-grid {
-   display:grid; grid-template-columns:repeat(2, 1fr); gap:12px;
- }
-.menu-btn {
-   padding:35px 10px; border:none; border-radius:15px;
-   background:linear-gradient(135deg, #F8BBD0, #F48FB1);
-   color:#880E4F; font-weight:800; font-size:15px; cursor:pointer;
-   text-align:center; line-height:1.4;
- }
-.menu-btn:active {transform:scale(0.95); background:#F06292;}
 .prod-form {
    background:#FFF8E1; border:2px dashed #FFCC80; border-radius:12px;
    padding:15px; margin-bottom:18px;
@@ -45,105 +35,74 @@
    width:100%; padding:12px; border:2px solid #FFE0B2; border-radius:8px;
    font-size:14px; background:white;
  }
-.input-group textarea {resize:vertical; min-height:60px;}
+.input-group input:focus,.input-group textarea:focus {outline:none; border-color:#D32F2F;}
 .save-btn {
    width:100%; padding:14px; background:#C2185B; color:white; border:none;
    border-radius:8px; font-weight:800; cursor:pointer; margin-top:8px; font-size:15px;
  }
+.save-btn:active {transform:scale(0.98);}
 .success {
    background:#4CAF50; color:white; padding:12px; border-radius:8px;
    text-align:center; margin-top:12px; display:none; font-weight:700;
- }
-.page {display:none;}
-.page.active {display:block;}
-.change-cat {
-   background:#FF9800; color:white; border:none; padding:10px;
-   border-radius:8px; width:100%; margin-bottom:15px; font-weight:700; cursor:pointer;
  }
 </style>
 </head>
 <body>
 <div class="container">
+  <button class="back-btn" onclick="window.location='index.html'">← Back to Menu</button>
 
+  <h2>💸 Log Expenses</h2>
+  <p class="subtitle">Ano binili mo today boss?</p>
 
-  <!-- PAGE 2: INPUT FORM -->
-  <div id="inputPage" class="page">
-    <button class="back-btn" onclick="backToCat()">← Back to Categories</button>
-    <h2 id="catTitle">Sahod</h2>
+  <div class="prod-form">
+    <h4>+ Add Expense</h4>
 
-    <div class="prod-form">
-      <h4>+ Log Expense sa <span id="catName">Sahod</span></h4>
-      <div class="input-group">
-        <label>Description / Para saan</label>
-        <input type="text" id="desc" placeholder="ex: Sahod ni Kuya Juan">
-      </div>
-      <div class="input-group">
-        <label style="color:#C2185B;">Amount ₱</label>
-        <input type="number" id="amount" placeholder="1500" min="1" step="0.01">
-      </div>
-      <div class="input-group">
-        <label>Notes - optional</label>
-        <textarea id="notes" placeholder="Dagdag detalye..."></textarea>
-      </div>
-      <button class="save-btn" onclick="saveExpense()">✅ Save Expense</button>
-      <div id="success" class="success">Saved! Naka-log na sa Daily Expenses 👌</div>
+    <div class="input-group">
+      <label>Ano Binili / Para Saan</label>
+      <input type="text" id="desc" placeholder="ex: Bigas 25kg, Gas LPG, etc">
     </div>
+
+    <div class="input-group">
+      <label style="color:#C2185B;">Amount ₱</label>
+      <input type="number" id="amount" placeholder="1500" min="1" step="0.01">
+    </div>
+
+    <div class="input-group">
+      <label>Petsa</label>
+      <input type="date" id="date">
+    </div>
+
+    <div class="input-group">
+      <label>Notes - optional</label>
+      <textarea id="notes" placeholder="Dagdag detalye... resibo no., etc"></textarea>
+    </div>
+
+    <button class="save-btn" onclick="saveExpense()">✅ Save Expense</button>
+    <div id="success" class="success">Saved! Naka-log na 👌</div>
   </div>
 </div>
 
 <script>
-let currentCat = 'Sahod';
 let expenses = JSON.parse(localStorage.getItem('expenses') || '[]');
 
-function showPage(pageId) {
-  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-  document.getElementById(pageId).classList.add('active');
-}
-
-function openCat(cat) {
-  currentCat = cat;
-  document.getElementById('catTitle').innerText = cat;
-  document.getElementById('catName').innerText = cat;
-
-  // Auto placeholder based sa category
-  const placeholders = {
-    'Sahod': 'ex: Sahod ni Kuya Juan',
-    'Kuryente': 'ex: Meralco Bill April',
-    'Tubig': 'ex: Maynilad Bill',
-    'Upa': 'ex: Upa sa pwesto',
-    'Gas/LPG': 'ex: 1 tank LPG',
-    'Packaging': 'ex: Plastic + Box',
-    'Transport': 'ex: Delivery fee',
-    'Others': 'ex: Anong binili'
-  };
-  document.getElementById('desc').placeholder = placeholders[cat];
-
-  showPage('inputPage');
-}
-
-function backToCat() {
-  document.getElementById('desc').value = '';
-  document.getElementById('amount').value = '';
-  document.getElementById('notes').value = '';
-  document.getElementById('success').style.display = 'none';
-  showPage('categoryPage');
-}
+// Set today as default date
+document.getElementById('date').value = new Date().toISOString().split('T')[0];
 
 function saveExpense() {
   const desc = document.getElementById('desc').value.trim();
   const amount = parseFloat(document.getElementById('amount').value);
+  const date = document.getElementById('date').value;
   const notes = document.getElementById('notes').value.trim();
 
-  if(!desc ||!amount) {
-    alert('Lagay ka description at amount boss!');
+  if(!desc ||!amount ||!date) {
+    alert('Lagay ka "Ano binili", "Amount" at "Petsa" boss!');
     return;
   }
 
   // Save sa expenses log
   expenses.push({
     datetime: new Date().toISOString(),
-    date: new Date().toISOString().split('T')[0],
-    category: currentCat,
+    date: date,
     description: desc,
     amount: amount,
     notes: notes
@@ -151,11 +110,12 @@ function saveExpense() {
 
   localStorage.setItem('expenses', JSON.stringify(expenses));
 
-  // Show success
+  // Show success + clear form
   document.getElementById('success').style.display = 'block';
   document.getElementById('desc').value = '';
   document.getElementById('amount').value = '';
   document.getElementById('notes').value = '';
+  document.getElementById('date').value = new Date().toISOString().split('T')[0];
 
   setTimeout(() => {
     document.getElementById('success').style.display = 'none';
