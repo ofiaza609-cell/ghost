@@ -26,7 +26,6 @@ input[type=date] {
    width:100%; padding:12px; border:2px solid #FFCC80; border-radius:8px;
    font-size:16px; margin-bottom:20px;
  }
- /* Summary Cards */
 .summary-grid {
    display:grid; grid-template-columns:repeat(3, 1fr); gap:10px; margin-bottom:25px;
  }
@@ -34,11 +33,10 @@ input[type=date] {
    padding:20px 10px; border-radius:15px; text-align:center; color:white;
  }
 .card.green {background:linear-gradient(135deg, #4CAF50, #388E3C);}
-.card.blue {background:linear-gradient(135deg, #2196F3, #1976D2);}
 .card.red {background:linear-gradient(135deg, #F44336, #C62828);}
+.card.blue {background:linear-gradient(135deg, #2196F3, #1976D2);}
 .card-label {font-size:12px; opacity:0.9; margin-bottom:5px;}
 .card-value {font-size:22px; font-weight:800;}
- /* Tables */
 .section-title {
    color:#D32F2F; font-size:16px; font-weight:800; margin:20px 0 10px 0;
    border-left:4px solid #D32F2F; padding-left:10px;
@@ -50,7 +48,7 @@ th {
    background:#D32F2F; color:white; padding:10px; text-align:left;
  }
 td {
-   padding:8px; border-bottom:1px solid #eee;
+   padding:8px; border-bottom:1px solid #eee; word-break:break-word;
  }
 tr:nth-child(even) {background:#FFF3E0;}
 .total-row {
@@ -145,7 +143,7 @@ function loadReport() {
   let totalSales = 0;
   let totalExpenses = 0;
 
-  // Render Sales
+  // Render Sales - FIX DITO BOSS PARA WALA [OBJECT OBJECT]
   const salesBody = document.getElementById('salesBody');
   salesBody.innerHTML = '';
 
@@ -155,7 +153,15 @@ function loadReport() {
 
     salesToday.reverse().forEach(s => {
       const time = new Date(s.datetime).toLocaleTimeString('en-PH', {hour: '2-digit', minute:'2-digit'});
-      const items = s.items || s.product || 'N/A';
+
+      // FIX: i-convert items array to string
+      let items = 'N/A';
+      if(Array.isArray(s.items)) {
+        items = s.items.map(i => `${i.name} x${i.qty}`).join(', ');
+      } else if(s.product) {
+        items = s.product;
+      }
+
       const payment = s.payment || 'Cash';
       const total = parseFloat(s.total || s.amount || 0);
       totalSales += total;
