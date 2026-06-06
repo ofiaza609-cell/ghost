@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -129,8 +128,9 @@ return;
 }
 let html = '';
 prods.forEach(prod => {
+let imgTag = prod.image? `<img src="${prod.image}" class="prod-img">` : '<div class="prod-img" style="display:flex;align-items:center;justify-content:center;color:#ccc;font-size:10px;">No Image</div>';
 html += `<div class="prod-card" onclick="addToCart(${prod.id})">
-${prod.image? `<img src="${prod.image}" class="prod-img">` : '<div class="prod-img" style="display:flex;align-items:center;justify-content:center;color:#ccc;font-size:10px;">No Image</div>'}
+${imgTag}
 <div class="prod-name">${prod.name}</div>
 <div class="prod-price">₱${prod.price}</div>
 <div class="prod-stock">Stock: ${prod.stocks}</div>
@@ -258,6 +258,7 @@ gcashProof = '';
 }
 
 // Gcash proof upload preview
+document.addEventListener('DOMContentLoaded', function() {
 document.getElementById('proofInput').onchange = function(e) {
 const file = e.target.files[0];
 if(file) {
@@ -266,10 +267,11 @@ reader.onload = function(event) {
 gcashProof = event.target.result;
 document.getElementById('proofPreview').src = gcashProof;
 document.getElementById('proofPreview').style.display = 'block';
-}
+};
 reader.readAsDataURL(file);
 }
-}
+};
+});
 
 function computeChange() {
 const total = cart.reduce((sum, item) => sum + item.price * item.qty, 0);
