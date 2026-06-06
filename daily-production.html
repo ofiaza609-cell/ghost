@@ -5,235 +5,199 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Daily Production - Siomai Factory POS</title>
 <style>
-  body {
-    font-family: Arial, sans-serif;
-    background: #FFF8E1;
-    margin: 0;
-    padding: 20px;
-  }
+ * {margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI', Tahoma, sans-serif;}
+ body {background:#FFF8E1; padding:15px; min-height:100vh;}
 .container {
-    max-width: 700px;
-    margin: auto;
-    background: white;
-    border-radius: 20px;
-    padding: 20px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-    border-top: 6px solid #D32F2F;
-  }
-  h1 {
-    text-align: center;
-    color: #D32F2F;
-    margin-bottom: 5px;
-  }
-.subtitle {
-    text-align: center;
-    color: #666;
-    font-size: 14px;
-    margin-bottom: 20px;
-  }
-  input[type=date] {
-    width: 100%;
-    padding: 12px;
-    border: 2px solid #FFCC80;
-    border-radius: 10px;
-    font-size: 16px;
-    margin-bottom: 20px;
-  }
-.category-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 12px;
-    margin-bottom: 20px;
-  }
-.cat-btn {
-    padding: 25px 10px;
-    background: #FFA726;
-    color: #D32F2F;
-    border: none;
-    border-radius: 15px;
-    font-weight: 800;
-    font-size: 18px;
-    cursor: pointer;
-    transition: transform 0.1s;
-  }
-.cat-btn:active {
-    transform: scale(0.95);
-  }
-.cat-btn.active {
-    background: #D32F2F;
-    color: white;
-  }
+   max-width:480px;
+   margin:auto;
+   background:white;
+   border-radius:20px;
+   padding:20px;
+   box-shadow:0 6px 20px rgba(0,0,0,0.12);
+   border-top:6px solid #FFA726;
+ }
+ h2 { color:#D32F2F; text-align:center; margin-bottom:8px; font-size:24px; }
+.subtitle { text-align:center; color:#666; font-size:13px; margin-bottom:20px; }
 .back-btn {
-    width: 100%;
-    padding: 14px;
-    background: #757575;
-    color: white;
-    border: none;
-    border-radius: 12px;
-    font-weight: 800;
-    font-size: 16px;
-    margin-bottom: 15px;
-    cursor: pointer;
-  }
-  table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 13px;
-    margin-top: 15px;
-  }
-  th {
-    background: #D32F2F;
-    color: white;
-    padding: 10px;
-    text-align: left;
-  }
-  td {
-    padding: 8px;
-    border-bottom: 1px solid #eee;
-  }
-  tr:nth-child(even) {
-    background: #FFF3E0;
-  }
-.summary {
-    background: #4CAF50;
-    color: white;
-    padding: 15px;
-    border-radius: 12px;
-    text-align: center;
-    margin-top: 15px;
-    font-size: 18px;
-    font-weight: 800;
-  }
-.select-cat-msg {
-    text-align: center;
-    color: #D32F2F;
-    font-size: 18px;
-    font-weight: 700;
-    padding: 50px 20px;
-  }
-.no-data {
-    text-align: center;
-    color: #999;
-    padding: 40px;
-  }
-.hidden {
-    display: none!important;
-  }
+   background:#757575; color:white; border:none; padding:10px 18px;
+   border-radius:8px; cursor:pointer; margin-bottom:15px; font-size:13px; font-weight:600;
+ }
+ /* Menu Grid - same sa Products mo */
+.menu-grid {
+   display:grid; grid-template-columns:repeat(2, 1fr); gap:12px;
+ }
+.menu-btn {
+   padding:35px 10px; border:none; border-radius:15px;
+   background:linear-gradient(135deg, #FFCC80, #FFB74D);
+   color:#B71C1C; font-weight:800; font-size:15px; cursor:pointer;
+   text-align:center; line-height:1.4;
+ }
+.menu-btn:active {transform:scale(0.95); background:#FFA726;}
+ /* Input Form */
+.prod-form {
+   background:#FFF8E1; border:2px dashed #FFCC80; border-radius:12px;
+   padding:15px; margin-bottom:18px;
+ }
+.prod-form h4 { color:#D32F2F; margin-bottom:10px; font-size:14px; }
+.input-group {margin-bottom:12px;}
+.input-group label {
+   font-size:12px; font-weight:700; color:#D32F2F; margin-bottom:4px; display:block;
+ }
+.input-group input {
+   width:100%; padding:12px; border:2px solid #FFE0B2; border-radius:8px;
+   font-size:14px; background:white;
+ }
+.input-group input:focus {outline:none; border-color:#D32F2F;}
+.save-btn {
+   width:100%; padding:14px; background:#2E7D32; color:white; border:none;
+   border-radius:8px; font-weight:800; cursor:pointer; margin-top:8px; font-size:15px;
+ }
+.success {
+   background:#4CAF50; color:white; padding:12px; border-radius:8px;
+   text-align:center; margin-top:12px; display:none; font-weight:700;
+ }
+.page {display:none;}
+.page.active {display:block;}
+.change-cat {
+   background:#FF9800; color:white; border:none; padding:10px;
+   border-radius:8px; width:100%; margin-bottom:15px; font-weight:700; cursor:pointer;
+ }
 </style>
 </head>
 <body>
 <div class="container">
-  <button class="back-btn" onclick="window.location='index.html'">⬅ Back to Menu</button>
-
-  <h1>📦 Daily Production</h1>
-  <div class="subtitle">Pili ka muna category boss</div>
-
-  <input type="date" id="filterDate" onchange="loadProduction()">
-
-  <h2 style="color:#D32F2F; text-align:center;">🛒 Select Category</h2>
-  <div class="category-grid" id="catGrid">
-    <button class="cat-btn" onclick="selectCat('65s')">65's</button>
-    <button class="cat-btn" onclick="selectCat('30s')">30's</button>
-    <button class="cat-btn" onclick="selectCat('Big SIOMAI')">Big SIOMAI</button>
-    <button class="cat-btn" onclick="selectCat('Dumplings')">Dumplings</button>
-    <button class="cat-btn" onclick="selectCat('SIOPAO')">SIOPAO</button>
-    <button class="cat-btn" onclick="selectCat('Sauce')">Sauce</button>
-    <button class="cat-btn" onclick="selectCat('Others')">Others</button>
-    <button class="cat-btn" onclick="selectCat('All')">All</button>
+  <!-- PAGE 1: SELECT CATEGORY - same sa Products -->
+  <div id="categoryPage" class="page active">
+    <button class="back-btn" onclick="window.location='index.html'">← Back to Menu</button>
+    <h2>📦 Log Production</h2>
+    <p class="subtitle">Pili ka muna category boss</p>
+    <div class="menu-grid">
+      <button class="menu-btn" onclick="openCat('65s')">65's</button>
+      <button class="menu-btn" onclick="openCat('30s')">30's</button>
+      <button class="menu-btn" onclick="openCat('big')">Big SIOMAI</button>
+      <button class="menu-btn" onclick="openCat('dumplings')">Dumplings</button>
+      <button class="menu-btn" onclick="openCat('siopao')">SIOPAO</button>
+      <button class="menu-btn" onclick="openCat('sauce')">Sauce</button>
+      <button class="menu-btn" onclick="openCat('others')">Others</button>
+    </div>
   </div>
 
-  <div id="selectMsg" class="select-cat-msg">👆 Pili ka muna category sa taas</div>
+  <!-- PAGE 2: INPUT FORM -->
+  <div id="inputPage" class="page">
+    <button class="back-btn" onclick="backToCat()">← Back to Categories</button>
+    <h2 id="catTitle">65's Siomai</h2>
 
-  <div id="resultSection" class="hidden">
-    <div id="summary" class="summary" style="display:none;"></div>
-
-    <div style="overflow-x:auto;">
-      <table id="prodTable">
-        <thead>
-          <tr>
-            <th>Time</th>
-            <th>Product</th>
-            <th>Category</th>
-            <th>Qty Made</th>
-          </tr>
-        </thead>
-        <tbody id="prodBody"></tbody>
-      </table>
+    <div class="prod-form">
+      <h4>+ Log Production sa <span id="catName">65's Siomai</span></h4>
+      <div class="input-group">
+        <label>Product Name</label>
+        <input type="text" id="prodName" placeholder="ex: Pork Siomai 65's">
+      </div>
+      <div class="input-group">
+        <label style="color:#2E7D32;">Qty Nagawa Today</label>
+        <input type="number" id="prodQty" placeholder="500" min="1">
+      </div>
+      <button class="save-btn" onclick="saveProduction()">✅ Save + Add Stocks</button>
+      <div id="success" class="success">Saved! +stocks na sa Products 👌</div>
     </div>
-    <div id="noData" class="no-data" style="display:none;">Wala pang production na-log sa category na to 😅</div>
   </div>
 </div>
 
 <script>
-let currentCategory = null; // Walang default para di magshow agad
+let currentCat = '65s';
+let products = JSON.parse(localStorage.getItem('products') || '{}');
+let production = JSON.parse(localStorage.getItem('production') || '[]');
 
-function selectCat(cat) {
-  currentCategory = cat;
-  document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
-  event.target.classList.add('active');
+// Init all categories
+['65s','30s','big','dumplings','siopao','sauce','others','all'].forEach(cat => {
+  if(!products[cat]) products[cat] = [];
+});
 
-  // Itago yung "pili ka muna" message
-  document.getElementById('selectMsg').classList.add('hidden');
-  document.getElementById('resultSection').classList.remove('hidden');
-
-  loadProduction();
+function showPage(pageId) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById(pageId).classList.add('active');
 }
 
-function loadProduction() {
-  if(!currentCategory) return; // Wag magload kung wala pang pinipili
+function openCat(cat) {
+  currentCat = cat;
+  const catNames = {
+    '65s': "65's Siomai",
+    '30s': "30's Siomai",
+    'big': 'Big SIOMAI',
+    'dumplings': 'Dumplings',
+    'siopao': 'SIOPAO',
+    'sauce': 'Sauce',
+    'others': 'Others'
+  };
+  document.getElementById('catTitle').innerText = catNames[cat];
+  document.getElementById('catName').innerText = catNames[cat];
+  document.getElementById('prodName').placeholder = 'ex: Pork Siomai ' + catNames[cat];
+  showPage('inputPage');
+}
 
-  const production = JSON.parse(localStorage.getItem('production') || '[]');
-  const filterDate = document.getElementById('filterDate').value || new Date().toISOString().split('T')[0];
-  document.getElementById('filterDate').value = filterDate;
+function backToCat() {
+  document.getElementById('prodName').value = '';
+  document.getElementById('prodQty').value = '';
+  document.getElementById('success').style.display = 'none';
+  showPage('categoryPage');
+}
 
-  const tbody = document.getElementById('prodBody');
-  const noData = document.getElementById('noData');
-  const summary = document.getElementById('summary');
+function saveProduction() {
+  const name = document.getElementById('prodName').value.trim();
+  const qty = parseInt(document.getElementById('prodQty').value);
 
-  // Filter by date
-  let filtered = production.filter(p => {
-    const prodDate = new Date(p.datetime).toISOString().split('T')[0];
-    return prodDate === filterDate;
-  });
-
-  // Filter by category
-  if(currentCategory!== 'All') {
-    filtered = filtered.filter(p => p.category === currentCategory);
+  if(!name ||!qty) {
+    alert('Complete mo muna boss!');
+    return;
   }
 
-  tbody.innerHTML = '';
-  let totalQty = 0;
-
-  filtered.reverse().forEach(p => {
-    const time = new Date(p.datetime).toLocaleTimeString('en-PH', {hour: '2-digit', minute:'2-digit'});
-    tbody.innerHTML += `
-      <tr>
-        <td>${time}</td>
-        <td>${p.product}</td>
-        <td>${p.category}</td>
-        <td><b>${p.qty}</b> pcs</td>
-      </tr>
-    `;
-    totalQty += p.qty;
+  // 1. Save sa production log
+  production.push({
+    datetime: new Date().toISOString(),
+    product: name,
+    category: currentCat,
+    qty: qty
   });
+  localStorage.setItem('production', JSON.stringify(production));
 
-  // Show summary
-  if(filtered.length > 0) {
-    summary.style.display = 'block';
-    summary.textContent = currentCategory === 'All'
-    ? `Total Production Today: ${totalQty} pcs`
-      : `Total ${currentCategory}: ${totalQty} pcs`;
-    noData.style.display = 'none';
-    document.getElementById('prodTable').style.display = 'table';
+  // 2. AUTO ADD SA STOCKS - same products variable gamit
+  let prodItem = products[currentCat].find(p => p.name.toLowerCase() === name.toLowerCase());
+
+  if(prodItem) {
+    // May existing - dagdagan stocks
+    prodItem.stocks += qty;
   } else {
-    summary.style.display = 'none';
-    noData.style.display = 'block';
-    document.getElementById('prodTable').style.display = 'none';
+    // Wala pa - gawa bago product, price = 0 muna
+    prodItem = {
+      id: Date.now(),
+      name: name,
+      stocks: qty,
+      price: 0,
+      image: '',
+      category: currentCat
+    };
+    products[currentCat].push(prodItem);
   }
-}
 
-// Set today as default date
-document.getElementById('filterDate').value = new Date().toISOString().split('T')[0];
+  // Update din sa 'all'
+  let prodAll = products['all'].find(p => p.name.toLowerCase() === name.toLowerCase());
+  if(prodAll) {
+    prodAll.stocks += qty;
+  } else {
+    products['all'].push({...prodItem});
+  }
+
+  localStorage.setItem('products', JSON.stringify(products));
+
+  // Show success
+  document.getElementById('success').style.display = 'block';
+  document.getElementById('prodName').value = '';
+  document.getElementById('prodQty').value = '';
+
+  setTimeout(() => {
+    document.getElementById('success').style.display = 'none';
+  }, 2500);
+}
 </script>
 </body>
 </html>
