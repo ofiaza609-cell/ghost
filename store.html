@@ -381,12 +381,12 @@ h2 {
 
     <div class="gcash-proof" id="gcashProof">
       <label>📱 Gcash Proof of Payment - Upload Screenshot</label>
-    <input type="file" id="proofInput" accept="image/*">
-<img id="proofPreview" style="max-width:100%; margin-top:5px; display:none; border:2px solid #007BFF; border-radius:8px;">
+      <input type="file" id="proofInput" accept="image/*">
+    </div>
 
     <div class="payment-btns">
       <button class="pay-btn cash-btn" onclick="checkout('Cash')">💵 Cash</button>
-     <button class="pay-btn gcash-btn" onclick="checkout('Gcash')">📱 Gcash</button>
+      <button class="pay-btn gcash-btn" onclick="selectGcash()">📱 Gcash</button>
     </div>
     <button class="cancel-btn" onclick="closePayment()">Cancel</button>
   </div>
@@ -572,18 +572,6 @@ function closePayment() {
   selectedPayment = 'Cash';
   gcashProof = '';
 }
-document.getElementById('proofInput').onchange = function(e) {
-const file = e.target.files[0];
-if(file) {
-const reader = new FileReader();
-reader.onload = function(event) {
-gcashProof = event.target.result;
-document.getElementById('proofPreview').src = gcashProof;
-document.getElementById('proofPreview').style.display = 'block';
-};
-reader.readAsDataURL(file);
-}
-};
 
 function computeChange() {
   const total = cart.reduce((sum, item) => sum + item.price * item.qty, 0);
@@ -641,7 +629,7 @@ function processCheckout(paymentMethod, total) {
     items: [...cart],
     total: total,
     payment: paymentMethod,
-    proofUrl: paymentMethod === 'Gcash'? gcashProof : ''
+    proof: gcashProof
   });
   localStorage.setItem('sales', JSON.stringify(sales));
 
