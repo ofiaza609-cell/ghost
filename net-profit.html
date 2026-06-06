@@ -51,11 +51,10 @@ th {
 td {
    padding:8px; border-bottom:1px solid #eee; vertical-align:top;
  }
-/* FIX WIDTH NG COLUMNS */
 th:nth-child(1), td:nth-child(1) {width:15%;} /* Time */
-th:nth-child(2), td:nth-child(2) {width:50%;} /* Items - mas malawak */
+th:nth-child(2), td:nth-child(2) {width:55%;} /* Items - mas malawak */
 th:nth-child(3), td:nth-child(3) {width:15%;} /* Payment */
-th:nth-child(4), td:nth-child(4) {width:20%; white-space:nowrap; text-align:right;} /* Total - wag putulin */
+th:nth-child(4), td:nth-child(4) {width:15%; white-space:nowrap; text-align:right;} /* Total */
 
 tr:nth-child(even) {background:#FFF3E0;}
 .total-row {
@@ -67,12 +66,15 @@ tr:nth-child(even) {background:#FFF3E0;}
  }
 .profit-positive {color:#4CAF50; font-weight:800;}
 .profit-negative {color:#F44336; font-weight:800;}
-/* BULLET LIST SA ITEMS */
-.item-list {
-   margin:0; padding-left:18px; list-style-type:disc;
+/* STYLE NG ITEMS WITH PRICE */
+.item-detail {
+   margin-bottom:4px; line-height:1.5; font-size:12px;
  }
-.item-list li {
-   margin-bottom:3px; line-height:1.4;
+.item-name {font-weight:600; color:#333;}
+.item-total {font-weight:700; color:#D32F2F;}
+.subtotal-line {
+   margin-top:6px; padding-top:6px; border-top:1px dashed #ccc;
+   font-weight:800; color:#D32F2F; font-size:13px;
  }
 </style>
 </head>
@@ -85,7 +87,6 @@ tr:nth-child(even) {background:#FFF3E0;}
 
   <input type="date" id="filterDate" onchange="loadReport()">
 
-  <!-- Summary Cards -->
   <div class="summary-grid">
     <div class="card green">
       <div class="card-label">Total Sales</div>
@@ -108,7 +109,7 @@ tr:nth-child(even) {background:#FFF3E0;}
       <thead>
         <tr>
           <th>Time</th>
-          <th>Items</th>
+          <th>Items + Price</th>
           <th>Payment</th>
           <th>Total</th>
         </tr>
@@ -155,7 +156,7 @@ function loadReport() {
   let totalSales = 0;
   let totalExpenses = 0;
 
-  // Render Sales - BULLET LIST NA BOSS
+  // Render Sales - MAY PRICE PER ITEM NA BOSS
   const salesBody = document.getElementById('salesBody');
   salesBody.innerHTML = '';
 
@@ -166,34 +167,46 @@ function loadReport() {
     salesToday.reverse().forEach(s => {
       const time = new Date(s.datetime).toLocaleTimeString('en-PH', {hour: '2-digit', minute:'2-digit'});
 
-      // Gawin nating bullet list yung items
-      let itemsHtml = '<ul class="item-list">';
+      // Gawin nating per item + price + line total
+      let itemsHtml = '';
+      let transactionTotal = 0;
+
       if(Array.isArray(s.items)) {
         s.items.forEach(i => {
-          itemsHtml += `<li>${i.name} x${i.qty}</li>`;
+          const price = parseFloat(i.price || 0);
+          const qty = parseInt(i.qty || 1);
+          const lineTotal = price * qty;
+          transactionTotal += lineTotal;
+
+          itemsHtml += `<div class="item-detail">
+            <span class="item-name">${i.name} x${qty}</span> =
+            <span class="item-total">₱${lineTotal.toFixed(2)}</span>
+          </div>`;
         });
       } else if(s.product) {
-        itemsHtml += `<li>${s.product}</li>`;
+        const total = parseFloat(s.total || 0);
+        itemsHtml = `<div class="item-detail">${s.product} = ₱${total.toFixed(2)}</div>`;
+        transactionTotal = total;
       }
-      itemsHtml += '</ul>';
+
+      itemsHtml += `<div class="subtotal-line">TOTAL = ₱${transactionTotal.toFixed(2)}</div>`;
 
       const payment = s.payment || 'Cash';
-      const total = parseFloat(s.total || s.amount || 0);
-      totalSales += total;
+      totalSales += transactionTotal;
 
       salesBody.innerHTML += `
         <tr>
           <td>${time}</td>
           <td>${itemsHtml}</td>
           <td>${payment}</td>
-          <td>₱${total.toFixed(2)}</td>
+          <td>₱${transactionTotal.toFixed(2)}</td>
         </tr>
       `;
     });
 
     salesBody.innerHTML += `
       <tr class="total-row">
-        <td colspan="3">TOTAL SALES</td>
+        <td colspan="3">GRAND TOTAL SALES</td>
         <td>₱${totalSales.toFixed(2)}</td>
       </tr>
     `;
